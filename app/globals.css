@@ -1,1 +1,73 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+    --background: #F7F4EF;
+    --paper: ##FFFEFB;
+    -moz-osx-font-smoothing: grayscale;
+    --cream: #F7F4EF;
+    --ticker:#F0EDE7;
+    --primary: #5340C8;
+    --blue-lt: #EEEDFE;
+    --blue-md: #9B8EF0;
+    --text-muted: #7C7768;
+    --muted: #7C7768;
+    --secondary-color: #111008;
+    --faint: #B8B2A7;
+    --border: #E6E0D6;
+    --border-color: #d9d8e8;
+    --font-heading: var(--font-fraunces);
+    --font-body: var(--font-plus-jakarta);
+}
+
+h1 {
+  font-family: var(--font-fraunces);
+}
+@keyframes pulse {
+  0%,100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes fadeup {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes wave {
+    0%,
+    100% {
+        transform: scaleY(0.4);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+
+/* *,*::before,*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+} */
+
+
+
