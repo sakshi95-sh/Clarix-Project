@@ -1,6 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-export default function ChatMessages({ hasMessage, message }: { hasMessage: boolean; message: { content: string; role: 'user' | 'AI' }[]     }) {
+export default function ChatMessages({ hasMessage, message }: { hasMessage: boolean; message: { content: string; role: 'user' | 'AI'; fileType?: string; fileUrl?: string }[]     }) {
+  console.log("message", message)
     return (        
         <div className="flex flex-col flex-1  overflow-hidden">
             {hasMessage
@@ -14,6 +15,21 @@ export default function ChatMessages({ hasMessage, message }: { hasMessage: bool
                     {msg.role === "user" &&
                       <>
                         <h1 className=" justify-start text-gray-800 text-sm font-medium tracking-[2px]">{msg.role}</h1>
+                        {msg.fileType?.startsWith("image/") && (<img className="max-w-[150px] max-h-[300px]" src={msg.fileUrl} alt="uploaded-image" />)}
+                        {msg.fileType?.startsWith("application/pdf") && (
+                          <a
+                            href={msg.fileUrl}
+                            target="_blank"
+                            className="text-blue-500 underline"
+                          >
+                            View PDF
+                          </a>
+                        )}
+                          {msg.fileType?.startsWith("audio/") && (
+                          <audio controls >
+                            <source src={msg.fileUrl} type={msg.fileType} />
+                          </audio>
+                        )}
                         <div className=" bg-[#534ab7] text-white text-xs  tracking-wide p-2 rounded-lg whitespace-pre-wrap">{msg.content}</div>
                       </>}
                     {msg.role === "AI" &&

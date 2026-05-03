@@ -1,25 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
+import { verifyAuth } from "@/app/lib/auth";
 
 export async function GET(request: NextRequest) {
-
-
-  const { searchParams } = new URL(request.url);
-  const userId = searchParams.get('userId');
-
-  if (!userId) {
-    return NextResponse.json(
-      { error: "userId is required" },
-      { status: 400 }
-
-    );
-
-  }
-
   try {
+    const user = await verifyAuth();
     const chats = await prisma.chat.findMany({
       where: {
-        userId:userId
+        userId:user.userId
       },
       include: {
         messages: {
@@ -30,13 +18,13 @@ export async function GET(request: NextRequest) {
         }
       }
     });
-console.log("CHATS ----------- ",chats);
+// console.log("CHATS ----------- ",chats);
 const formattedChats = chats.map(chat => ({
   id: chat.id,
   preview: chat.messages[0]?.content || "New Chat",
 }));
 
-console.log("CHATS ----------- ",formattedChats);
+// console.log("CHATS ----------- ",formattedChats);
     return NextResponse.json(
       {
         chatHistory: formattedChats

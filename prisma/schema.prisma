@@ -38,6 +38,8 @@ model Message{
   chatId String
   content String
   role String
+  fileUrl String?
+  fileType String?
   createdAt DateTime @default(now())
 
   @@map("messages")

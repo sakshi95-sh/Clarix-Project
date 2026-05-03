@@ -21,6 +21,7 @@ export async function generateResponse(prompt: string) {
 
    const data = await response.json();
     console.log("Response data:", data);
+    
     const reply = data.choices[0].message.content;
 
     return reply;

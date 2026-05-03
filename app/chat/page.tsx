@@ -1,9 +1,6 @@
 "use client";
-import Link from "next/link";
 import Header from "../components/Header";
 import { useState, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import Sidebar from "../components/Chat/Sidebar";
 import ChatMessages from "../components/Chat/ChatMessages";
 import ChatInput from "../components/Chat/ChatInput";
@@ -29,13 +26,10 @@ const[userId, setUserId] = useState<string | null>(null);
   setMessage([]);
 };
 
+ useEffect(() => {
+  fetchChats();
+}, []);
 
-  useEffect(() => {
-    const currentUserId = localStorage.getItem("userId");
-    if (currentUserId) {
-      setUserId(currentUserId);
-    } 
-  },[]);
   const handleChatSelect = async (chatId: string) => {
   setChatId(chatId);
   const response = await fetch(`/api/messages?chatId=${chatId}`);
@@ -43,11 +37,6 @@ const[userId, setUserId] = useState<string | null>(null);
   setMessage(data.messages);
   console.log("MESSAGES ----------- ",data.messages);
 };
-    useEffect(() => {
-      if (userId) {
-        fetchChats();
-      }
-    }, [userId]);
   //  Add logic for upload a pdf file
   const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     // console.log(e.target.files);
@@ -84,11 +73,12 @@ const[userId, setUserId] = useState<string | null>(null);
   }
 
     const fetchChats = async () => {
-    if (!userId) return;
-    const response = await fetch(`/api/chats?userId=${userId}`);
+    const response = await fetch(`/api/chats`, {
+      credentials: "include"
+    });
     const data = await response.json();
-    setChatHistory(data.chatHistory);
-    console.log("DATA ----------- ",chatHistory);
+    setChatHistory(data.chatHistory)
+    console.log("DATA ----------- ",data);
   };
 
   const handleSubmitChat = async (e: React.FormEvent) => {
@@ -121,7 +111,6 @@ const[userId, setUserId] = useState<string | null>(null);
       const userMessage = inputValue;
       if (inputValue.trim()) {
         formData.append('message', userMessage);
-        setMessage(prev => [...prev, { content: inputValue, role: 'user' }]);
       }
       setInputValue("");
       setIsLoading(true);
@@ -130,19 +119,23 @@ const[userId, setUserId] = useState<string | null>(null);
         body: formData,
       });
       const data = await res.json();
+      setMessage(prev => [...prev, { 
+        content: userMessage, 
+        role: 'user' ,
+        fileUrl: data.fileUrl,
+        fileType: data.fileType
+      }]);
       setMessage(prev => [...prev, { content: data.response, role: 'AI' }]);
       fetchChats();
       setIsLoading(false);
     }
-
+  // Logic for sending IMAGE only
     if(selectedFile && selectedFile.type.startsWith('image/')) {
     const formData = new FormData();
     formData.append('file', selectedFile);
     const userMessage = inputValue;
       if (inputValue.trim()) {
         formData.append('message', userMessage);
-        setMessage(prev => [...prev, { content: inputValue, role: 'user' }]);
-      
       }
       setInputValue("");
       setIsLoading(true);
@@ -151,6 +144,12 @@ const[userId, setUserId] = useState<string | null>(null);
         body: formData,
       });
       const data = await res.json();
+      setMessage(prev => [...prev, { 
+        content: userMessage, 
+        role: 'user' ,
+        fileUrl: data.fileUrl,
+        fileType: data.fileType
+      }]);
       setMessage(prev => [...prev, { content: data.response, role: 'AI' }]);
          fetchChats();
       setIsLoading(false);
@@ -162,8 +161,6 @@ const[userId, setUserId] = useState<string | null>(null);
     const userMessage = inputValue;
       if (inputValue.trim()) {
         formData.append('message', userMessage);
-        setMessage(prev => [...prev, { content: inputValue, role: 'user' }]);
-      
       }
       setInputValue("");
       setIsLoading(true);
@@ -172,8 +169,16 @@ const[userId, setUserId] = useState<string | null>(null);
         body: formData,
       });
       const data = await res.json();
+        setMessage(prev => [...prev, { 
+        content: inputValue, 
+        role: 'user',
+        fileUrl: data.fileUrl,
+        fileType: data.fileType
+       }]);
+       console.log("data", data.fileUrl);
+       console.log("data", data.fileType);
       setMessage(prev => [...prev, { content: data.response, role: 'AI' }]);
-         fetchChats();
+         fetchChats();  
       setIsLoading(false);
     }
   }
@@ -182,7 +187,7 @@ const[userId, setUserId] = useState<string | null>(null);
   return (
     <div id="chat-page" className="flex flex-col h-screen">
       <Header />
-      <main className="flex flex-1 pt-[58px]  border-3 border-pink-500 overflow-hidden bg-[var(--background)]">
+      <main className="flex flex-1 pt-[58px] overflow-hidden bg-[var(--background)]">
         <Sidebar chatHistory={chatHistory} 
         handleChatSelect={handleChatSelect}
         handleNewChat={handleNewChat} 
@@ -191,7 +196,7 @@ const[userId, setUserId] = useState<string | null>(null);
         {/* Main Chat Container */}
         <div className="flex flex-col flex-1  overflow-hidden bg-[var(--cream)]">
           {/* MESSAGES */}
-          <ChatMessages hasMessage={hasMessage} message={message} />
+          <ChatMessages hasMessage={hasMessage} message={message}  />
           {/* Typing Area */}
           <ChatInput 
           handleSubmitChat={handleSubmitChat} 

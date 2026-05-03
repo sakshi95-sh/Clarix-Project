@@ -1,54 +1,34 @@
 import { generateResponse } from "../../lib/ai";
 import { prisma } from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { verifyAuth } from "@/app/lib/auth";
+import { saveMessage } from "@/app/lib/messages";
+import { getOrCreateChat } from "@/app/lib/chatIdCreation";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const {message,chatId,userId} = body;
+    const {message,chatId} = body;
+    const user = await verifyAuth();
     if (!message) {
       return NextResponse.json({ response: "Failed to generate response" });
     }
-       let currentChatId = chatId;
-    if(!currentChatId){
-      const chat = await prisma.chat.create({
-        data: {
-            user: {
-                connect: {
-                    id:userId,
-                },
-            },
-  
-        }
-      });
-      currentChatId = chat.id;
-    }
-
-     await prisma.message.create({
-      data: {
-        chat: {
-            connect: {
-                id: currentChatId,
-            },
-        },
-        content: message,
-        role: "user",
-      },
-
-    });
+const currentChatId = await getOrCreateChat(
+  chatId,
+  user.userId
+);
+await saveMessage({
+  chatId: currentChatId,
+  content: message,
+  role: "user",
+});
     const reply = await generateResponse(message);
 
-    await prisma.message.create({
-      data: {
-            chat: {
-            connect: {
-                id: currentChatId,
-            },
-        },
-        content: reply,
-        role: "AI",
-      },
-    });
+  await saveMessage({
+  chatId: currentChatId,
+  content: reply,
+  role: "AI",
+});
 
     return NextResponse.json({ response: reply });
 

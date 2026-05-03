@@ -6,7 +6,7 @@ export default function Hero() {
       <div className="max-w-[1250px] mx-auto flex flex-col lg:flex-row items-center gap-6  ">
 
         {/* LEFT */}
-        <div className="w-full lg:w-1/2 min-w-0 flex flex-col gap-2 mt-30">
+        <div className="w-full lg:w-1/2 min-w-0 flex flex-col gap-2 pt-[20px]">
 
           {/* Badge */}
           <div className="flex items-center p-2 rounded-full bg-[var(--blue-lt)] border border-[var(--border-color)] w-fit opacity-0 animate-[fadeup_0.6s_ease_0.20s_forwards]">

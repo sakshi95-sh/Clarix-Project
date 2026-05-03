@@ -84,16 +84,16 @@ export default function ChatInput({
                 <button onClick={() => setSelectedFile(null)}>✖</button>
               </div>
             )}
-            <form className=" flex flex-row   gap-4"
+            <form className=" flex flex-row   gap-2"
               onSubmit={handleSubmitChat}>
               <input type="text" placeholder="Ask me anything..."
-                className="w-[80%] px-5 py-2 
-          h-18
+                className="w-[90%] px-2 py-2 
+          h-10
           border-2 border-[#c6c2bb]
           rounded-lg 
           focus:outline-none 
-          bg-[#eae7e2]
-          text-xl
+          bg-[var(--cream)]
+          text-sm
           focus:ring-2 
           focus:ring-[#534ab7]
           "
@@ -101,9 +101,9 @@ export default function ChatInput({
                 value={inputValue}
               />
               <button className="bg-[#534ab7] text-white px-4 py-2 rounded-lg
-          w-40
-          text-xl
-          h-16"
+        
+          text-sm
+          "
                 type="submit"
               >Send</button>
             </form>
