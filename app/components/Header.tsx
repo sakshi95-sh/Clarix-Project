@@ -2,30 +2,23 @@
 import { Outfit } from "next/font/google";
 import AppName from "./AppName";
 import Link from "next/link";
-import { useModal } from "./ModalProvider";
-import { useState, useEffect } from "react";
+import { useModal } from "../context/ModalProvider";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
-    const { setOpenHow, setOpenLogin, setOpenSignup } = useModal();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        const userId = localStorage.getItem("userId");
-        setIsLoggedIn(!!userId);
-    }, []);
-
-    useEffect(() => {
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-            setIsLoggedIn(true);
-        }
-    }, []);
+    const { setOpenHow, setOpenLogin, setOpenSignup,setOpenFeedback } = useModal();
+    const {isLoggedIn, setIsLoggedIn} = useAuth();
 
 
-    const handleLogout = () => {
-        localStorage.removeItem("userId");
+
+    const handleLogout = async () => {
+        await fetch("/api/logout", {
+            method: "POST",
+            credentials: "include"
+        });
+        setIsLoggedIn(false);
         window.location.href = "/";
-    };
+    }
     return (
         <header className=" 
         flex justify-between items-center  fixed top-0 w-full z-50  border-b border-[var(--border-color)]
@@ -59,8 +52,8 @@ export default function Header() {
                     hover:bg-[#4a41a0] 
                     hover:shadow-2xl
                     transition-colors" onClick={handleLogout}>Logout</button>) :
-                <>
-                    <button onClick={() => setOpenLogin(true)} className="cursor-pointer
+                    <>
+                        <button onClick={() => setOpenLogin(true)} className="cursor-pointer
                     text-[var(--text-muted)]
                     font-sans
                     text-sm
@@ -70,10 +63,10 @@ export default function Header() {
                     tracking-wide
                     hover:text-[var(--primary)]   
                     font-normal
-                    hover:shadow-2xl  ">Log In</button>
-                    <button onClick={() => setOpenSignup(true)} className="
+                    hover:shadow-xl  ">Log In</button>
+                        <button onClick={() => setOpenSignup(true)} className="
                     cursor-pointer 
-                    bg-[#534ab7] 
+                    bg-[var(--primary)] 
                     text-white 
                     font-sans
                    p-2
@@ -84,7 +77,7 @@ export default function Header() {
                     hover:shadow-2xl
                     transition-colors">Sign Up for free</button>
                     </>}
-                <Link href="/feedback" onClick={() => setOpenSignup(true)} className="
+                <button onClick={() => setOpenFeedback(true)} className="
                     cursor-pointer
                     text-[var(--text-muted)]
                     font-sans
@@ -94,7 +87,7 @@ export default function Header() {
                     leading-[1.2]
                     font-normal
                     hover:shadow-2xl 
-                     ">Feedback</Link>
+                     ">Feedback</button>
             </div>
 
         </header>

@@ -79,7 +79,7 @@ export default function ChatInput({
               </label>
             </div>
             {selectedFile && (
-              <div className="text-lg bg-[#eae7e2] w-fit px-4 py-2 rounded-lg flex items-center gap-2">
+              <div className="text-lg bg-[var(--primary)] w-fit px-4 py-2 rounded-lg flex items-center gap-2">
                 <span>{selectedFile.name}</span>
                 <button onClick={() => setSelectedFile(null)}>✖</button>
               </div>
@@ -100,7 +100,7 @@ export default function ChatInput({
                 onChange={handleInputChange}
                 value={inputValue}
               />
-              <button className="bg-[#534ab7] text-white px-4 py-2 rounded-lg
+              <button className="bg-[var(--primary)] text-white px-4 py-2 rounded-lg
         
           text-sm
           "

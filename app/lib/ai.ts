@@ -12,6 +12,10 @@ export async function generateResponse(prompt: string) {
       model: "nvidia/nemotron-3-super-120b-a12b:free",
       messages: [
         {
+          role: "system",
+          content: "You are a concise AI assistant. Keep responses short, direct, and to the point. Only provide detailed explanations if the user explicitly asks for them."
+        },
+        {
           role: "user",
           content: prompt,
         },

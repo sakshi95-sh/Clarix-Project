@@ -34,6 +34,7 @@ export async function POST(request: Request) {
       fileUrl,
       fileType: file.type,
     });
+    
     console.log('Image text:', text);
     const response = await generateResponse(text + "\n\n" + message);
     await saveMessage({

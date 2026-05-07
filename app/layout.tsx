@@ -2,7 +2,8 @@
 import './globals.css';
 import { Toaster } from "react-hot-toast";
 import { Plus_Jakarta_Sans, Mogra, Fraunces } from 'next/font/google';
-import ModalProvider from './components/ModalProvider';
+import ModalProvider from './context/ModalProvider';
+import { AuthProvided } from './context/AuthContext';
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -32,9 +33,11 @@ export default function RootLayout({
           },
          }}
          />
+         <AuthProvided>
         <ModalProvider>
           {children}
         </ModalProvider>
+         </AuthProvided>
       </body>
     </html>
   );

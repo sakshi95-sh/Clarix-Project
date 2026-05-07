@@ -3,9 +3,10 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import AppName from "./AppName";
-
+import { useAuth } from "../context/AuthContext";
 
 export default function SignupModal({ onClose }: { onClose: () => void }) {
+  const { setIsLoggedIn } = useAuth();
 
      const [isError, setIsError] = useState("");
      const [status, setStatus] = useState("");
@@ -32,6 +33,7 @@ export default function SignupModal({ onClose }: { onClose: () => void }) {
        form.reset();
        onClose(); 
        toast.success("Account created 🎉");
+       setIsLoggedIn(true);
     } else {
        const data = await res.json();
        setIsError(data.error);

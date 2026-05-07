@@ -10,7 +10,7 @@ import Footer from "../components/Landing/Footer";
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [inputValue, setInputValue] = useState("");
-const[userId, setUserId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
 
 
@@ -22,21 +22,22 @@ const[userId, setUserId] = useState<string | null>(null);
 
 
   const handleNewChat = () => {
-  setChatId(null);
-  setMessage([]);
-};
+    setChatId(null);
+    setMessage([]);
+  };
 
- useEffect(() => {
-  fetchChats();
-}, []);
+  useEffect(() => {
+    fetchChats();
+  }, []);
 
   const handleChatSelect = async (chatId: string) => {
-  setChatId(chatId);
-  const response = await fetch(`/api/messages?chatId=${chatId}`);
-  const data = await response.json();
-  setMessage(data.messages);
-  console.log("MESSAGES ----------- ",data.messages);
-};
+    setChatId(chatId);
+    const response = await fetch(`/api/messages?chatId=${chatId}`);
+    const data = await response.json();
+    //  const fullMessages = await response.json();
+    setMessage(data.messages);
+    console.log("MESSAGES ----------- ", data.messages);
+  };
   //  Add logic for upload a pdf file
   const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     // console.log(e.target.files);
@@ -50,7 +51,7 @@ const[userId, setUserId] = useState<string | null>(null);
     const file = e.target.files?.[0];
     console.log(file);
     if (!file) return
-    if(!['audio/mpeg','audio/wav', 'audio/mp3'].includes(file.type.toLowerCase())) {
+    if (!['audio/mpeg', 'audio/wav', 'audio/mp3'].includes(file.type.toLowerCase())) {
       alert('Please upload a valid audio file (MP3, WAV, or M4A)');
       return;
     }
@@ -65,20 +66,20 @@ const[userId, setUserId] = useState<string | null>(null);
     const file = e.target.files?.[0];
     console.log(file);
     if (!file) return
-    if(!['image/jpg','image/jpeg', 'image/png', 'image/webp'].includes(file.type.toLowerCase())) {
+    if (!['image/jpg', 'image/jpeg', 'image/png', 'image/webp'].includes(file.type.toLowerCase())) {
       alert('Please upload a valid image file (JPG, JPEG, PNG, or WebP)');
       return;
     }
     setSelectedFile(file);
   }
 
-    const fetchChats = async () => {
+  const fetchChats = async () => {
     const response = await fetch(`/api/chats`, {
       credentials: "include"
     });
     const data = await response.json();
     setChatHistory(data.chatHistory)
-    console.log("DATA ----------- ",data);
+    console.log("DATA ----------- ", data);
   };
 
   const handleSubmitChat = async (e: React.FormEvent) => {
@@ -89,7 +90,7 @@ const[userId, setUserId] = useState<string | null>(null);
     // Logic for sending message only
     if (inputValue && !selectedFile) {
       setMessage(prev => [...prev, { content: inputValue, role: 'user' }]);
-     const userMessage = inputValue;
+      const userMessage = inputValue;
 
       setInputValue("");
       setIsLoading(true);
@@ -99,8 +100,22 @@ const[userId, setUserId] = useState<string | null>(null);
         body: JSON.stringify({ message: userMessage, userId, chatId })
       });
       const data = await res.json();
-      setMessage(prev => [...prev, { content: data.response, role: 'AI' }]);
-         fetchChats();
+      const fullText = data.response;
+      let index = 0;
+
+      setMessage(prev => [...prev, { content: " ", role: 'AI' }]);
+      setInterval(() => {
+        setMessage(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            content: fullText.slice(0, index + 1),
+            role: "AI"
+          };
+          return updated;
+        });
+        index++;
+      }, 30);
+      fetchChats();
       setIsLoading(false);
     }
     // Logic for sending PDF only
@@ -114,14 +129,14 @@ const[userId, setUserId] = useState<string | null>(null);
       }
       setInputValue("");
       setIsLoading(true);
-      const res = await fetch ('/api/upload', {
+      const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
-      setMessage(prev => [...prev, { 
-        content: userMessage, 
-        role: 'user' ,
+      setMessage(prev => [...prev, {
+        content: userMessage,
+        role: 'user',
         fileUrl: data.fileUrl,
         fileType: data.fileType
       }]);
@@ -129,84 +144,89 @@ const[userId, setUserId] = useState<string | null>(null);
       fetchChats();
       setIsLoading(false);
     }
-  // Logic for sending IMAGE only
-    if(selectedFile && selectedFile.type.startsWith('image/')) {
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    const userMessage = inputValue;
+    // Logic for sending IMAGE only
+    if (selectedFile && selectedFile.type.startsWith('image/')) {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      const userMessage = inputValue;
       if (inputValue.trim()) {
         formData.append('message', userMessage);
       }
       setInputValue("");
       setIsLoading(true);
-      const res = await fetch ('/api/image', {
+      const res = await fetch('/api/image', {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
-      setMessage(prev => [...prev, { 
-        content: userMessage, 
-        role: 'user' ,
+      setMessage(prev => [...prev, {
+        content: userMessage,
+        role: 'user',
         fileUrl: data.fileUrl,
         fileType: data.fileType
       }]);
       setMessage(prev => [...prev, { content: data.response, role: 'AI' }]);
-         fetchChats();
+      fetchChats();
       setIsLoading(false);
     }
 
-    if(selectedFile && selectedFile.type.startsWith('audio/')) {
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    const userMessage = inputValue;
+    if (selectedFile && selectedFile.type.startsWith('audio/')) {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      const userMessage = inputValue;
       if (inputValue.trim()) {
         formData.append('message', userMessage);
       }
       setInputValue("");
       setIsLoading(true);
-      const res = await fetch ('/api/audio', {
+      const res = await fetch('/api/audio', {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
-        setMessage(prev => [...prev, { 
-        content: inputValue, 
+      setMessage(prev => [...prev, {
+        content: inputValue,
         role: 'user',
         fileUrl: data.fileUrl,
         fileType: data.fileType
-       }]);
-       console.log("data", data.fileUrl);
-       console.log("data", data.fileType);
+      }]);
+      console.log("data", data.fileUrl);
+      console.log("data", data.fileType);
       setMessage(prev => [...prev, { content: data.response, role: 'AI' }]);
-         fetchChats();  
+      fetchChats();
       setIsLoading(false);
     }
   }
 
-  
+
   return (
     <div id="chat-page" className="flex flex-col h-screen">
       <Header />
       <main className="flex flex-1 pt-[58px] overflow-hidden bg-[var(--background)]">
-        <Sidebar chatHistory={chatHistory} 
-        handleChatSelect={handleChatSelect}
-        handleNewChat={handleNewChat} 
-        chatId={chatId?.toString() || ""}  
+        <Sidebar chatHistory={chatHistory}
+          handleChatSelect={handleChatSelect}
+          handleNewChat={handleNewChat}
+          chatId={chatId?.toString() || ""}
         />
         {/* Main Chat Container */}
         <div className="flex flex-col flex-1  overflow-hidden bg-[var(--cream)]">
           {/* MESSAGES */}
-          <ChatMessages hasMessage={hasMessage} message={message}  />
+          <ChatMessages
+            hasMessage={hasMessage}
+            message={message}
+            isLoading={isLoading}
+          />
           {/* Typing Area */}
-          <ChatInput 
-          handleSubmitChat={handleSubmitChat} 
-          handleInputChange={handleInputChange} 
-          inputValue={inputValue} 
-          handleImageUpload={handleImageUpload}
-          handleAudioUpload={handleAudioUpload}
-          handlePdfUpload={handlePdfUpload}
-          selectedFile={selectedFile}
-          setSelectedFile={setSelectedFile}/>
+          <ChatInput
+            handleSubmitChat={handleSubmitChat}
+            handleInputChange={handleInputChange}
+            inputValue={inputValue}
+            handleImageUpload={handleImageUpload}
+            handleAudioUpload={handleAudioUpload}
+            handlePdfUpload={handlePdfUpload}
+            selectedFile={selectedFile}
+            setSelectedFile={setSelectedFile}
+          />
         </div>
       </main>
       <Footer />

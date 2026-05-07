@@ -4,8 +4,10 @@ import AppName from "./AppName";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginModal({ onClose }: { onClose: () => void }) {
+    const { setIsLoggedIn } = useAuth();
     const router = useRouter();
 
     const [isError, setIsError] = useState("");
@@ -35,7 +37,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
             localStorage.setItem("userName", data.userName);
 
             toast.success("Logged in 🎉");
-
+            setIsLoggedIn(true);
             onClose();
             router.push("/chat");
         } else {
@@ -43,9 +45,6 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
         }
 
     };
-
-
-
     return (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-md">
 
