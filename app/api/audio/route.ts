@@ -8,6 +8,7 @@ import { s3 } from "@/app/lib/s3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 export async function POST(request: Request) {
+   const { audioToSpeech } = await import("../../lib/audioToSpeech");
   try {
      let user = null;
     try {
