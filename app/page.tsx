@@ -2,7 +2,7 @@
 import Header from "./components/Header";
 import { Outfit } from "next/font/google";
 import { test } from "./Database/test-db";
-import Link from "next/link";
+import AuthRedirect from "./components/AuthRedirect";
 import Hero from "./components/Landing/Hero";
 import Ticker from "./components/Landing/Ticker";
 import Features from "./components/Landing/Feature";
@@ -13,10 +13,12 @@ const outfit = Outfit({ subsets: ["latin"] });
 
 
 export default function Home() {
+  
   return (
     <div id="landing-page">
       <Header />
       <main className="min-h-screen bg-[var(--background)] pt-2 p-2  " id="main-hero">
+        <AuthRedirect />
         <Hero />
         <Ticker />
          <Features />
