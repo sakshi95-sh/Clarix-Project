@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { audioToSpeech } from '../../lib/audioToSpeech';
 import { generateResponse } from '../../lib/ai';
 import { verifyAuth } from '@/app/lib/auth';

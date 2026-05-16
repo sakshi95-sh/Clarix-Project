@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { extractTextFromPDF } from "../../lib/pdfService";
 import { generateResponse } from "../../lib/ai";
 import { verifyAuth } from "@/app/lib/auth";

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { extractTextFromImage } from "../../lib/ocrService";
 import { generateResponse } from "../../lib/ai";
 import { s3 } from "@/app/lib/s3";

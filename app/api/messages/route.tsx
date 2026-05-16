@@ -1,3 +1,5 @@
+
+export const dynamic = "force-dynamic";
 import { verifyAuth } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/prisma";
 
