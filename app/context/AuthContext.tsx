@@ -21,7 +21,6 @@ export const AuthProvided =({
                credentials: "include"
            });
            const data = await response.json();
-           console.log("data", data);
            setIsLoggedIn(data.authenticated);
    
        }

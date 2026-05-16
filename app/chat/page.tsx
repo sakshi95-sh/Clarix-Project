@@ -41,20 +41,16 @@ export default function Home() {
     const data = await response.json();
     //  const fullMessages = await response.json();
     setMessage(data.messages);
-    console.log("MESSAGES ----------- ", data.messages);
   };
   //  Add logic for upload a pdf file
   const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.target.files);
     const file = e.target.files?.[0];
-    console.log(file);
     if (!file) return
     setSelectedFile(file);
   };
 
   const handleAudioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file);
     if (!file) return
     if (!['audio/mpeg', 'audio/wav', 'audio/mp3'].includes(file.type.toLowerCase())) {
       alert('Please upload a valid audio file (MP3, WAV, or M4A)');
@@ -69,7 +65,6 @@ export default function Home() {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file);
     if (!file) return
     if (!['image/jpg', 'image/jpeg', 'image/png', 'image/webp'].includes(file.type.toLowerCase())) {
       alert('Please upload a valid image file (JPG, JPEG, PNG, or WebP)');
@@ -84,7 +79,6 @@ export default function Home() {
     });
     const data = await response.json();
     setChatHistory(data.chatHistory)
-    console.log("DATA ----------- ", data);
   };
 
   const handleSubmitChat = async (e: React.FormEvent) => {
@@ -117,7 +111,7 @@ export default function Home() {
     if (selectedFile && selectedFile.type === 'application/pdf') {
       const formData = new FormData();
       formData.append('file', selectedFile);
-
+      formData.append("chatId", chatId || "");
       const userMessage = inputValue;
       if (inputValue.trim()) {
         formData.append('message', userMessage);
@@ -154,6 +148,7 @@ export default function Home() {
     if (selectedFile && selectedFile.type.startsWith('image/')) {
       const formData = new FormData();
       formData.append('file', selectedFile);
+      formData.append("chatId", chatId || "");
       const userMessage = inputValue;
       if (inputValue.trim()) {
         formData.append('message', userMessage);
@@ -190,6 +185,7 @@ export default function Home() {
     if (selectedFile && selectedFile.type.startsWith('audio/')) {
       const formData = new FormData();
       formData.append('file', selectedFile);
+      formData.append("chatId", chatId || "");
       const userMessage = inputValue;
       if (inputValue.trim()) {
         formData.append('message', userMessage);

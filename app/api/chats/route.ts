@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         }
       }
     });
-// console.log("CHATS ----------- ",chats);
+
 const formattedChats = chats.map(chat => ({
   id: chat.id,
   preview: chat.messages[0]?.content || "New Chat",

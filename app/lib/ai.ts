@@ -54,7 +54,7 @@ export async function generateResponse(prompt: string) {
           const parsed = JSON.parse(jsonString);
           content += parsed.choices?.[0]?.delta?.content || "";
         } catch (error) {
-          console.log("JSON parse error:", error);
+          console.error("JSON parse error:", error);
         }
       }
     }

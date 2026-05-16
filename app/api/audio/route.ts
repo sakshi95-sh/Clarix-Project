@@ -32,6 +32,9 @@ const buffer = Buffer.from(arrayBuffer);
       await s3.send(command);
     const message = formData.get("message") as string;
     const speech = await audioToSpeech(file);
+        const response = await generateResponse(speech+ "\n\n" + message);
+
+      if (user) {
     const currentChatId = await getOrCreateChat(
       chatId,
       user?.userId || ""
@@ -39,18 +42,18 @@ const buffer = Buffer.from(arrayBuffer);
 
     await saveMessage({
       chatId: currentChatId,
-      content: speech,
+      content: message || " ",
       role: "user",
       fileUrl: fileUrl,
       fileType: file.type,
     });
-    const response = await generateResponse(speech+ "\n\n" + message);
     await saveMessage({
       chatId: currentChatId,
       content: response,
       role: "AI",
     });
-    return Response.json({ response, chatId: currentChatId ,
+  }
+    return Response.json({ response, 
       fileUrl: fileUrl,
       fileType: file.type
     });

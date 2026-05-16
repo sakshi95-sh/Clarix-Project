@@ -12,11 +12,6 @@ import Footer from "./components/Landing/Footer";
 const outfit = Outfit({ subsets: ["latin"] });
 
 
-function handleFreeSignup() {
-  // Handle free signup logic here
-  // console.log("Free signup clicked");
-}
-
 export default function Home() {
   return (
     <div id="landing-page">

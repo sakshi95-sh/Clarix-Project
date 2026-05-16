@@ -9,7 +9,6 @@ export async function extractTextFromImage(imageBuffer: Buffer) {
     };
     
     const text = await tesseract.recognize(imageBuffer, config);
-    console.log('OCR Text:', text);
     return text;
 
   } catch (error) {

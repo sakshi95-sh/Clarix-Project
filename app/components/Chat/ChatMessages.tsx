@@ -6,7 +6,6 @@ export default function ChatMessages(
     message: { content: string; role: 'user' | 'AI'; fileType?: string; fileUrl?: string }[]
     isLoading: boolean
   }) {
-  console.log("message", message)
   return (
     <div className="flex flex-col flex-1  overflow-hidden">
       {hasMessage
