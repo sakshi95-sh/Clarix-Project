@@ -7,6 +7,12 @@ import { s3 } from "@/app/lib/s3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 export async function POST(request: Request) {
   try {
+       let user = null;
+    try {
+      user = await verifyAuth();
+    } catch {
+      user = null;
+    }
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const text = formData.get('message') as string;
@@ -19,7 +25,7 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    const user = await verifyAuth();
+   
     // convert file → buffer
     const arrayBuffer = await file.arrayBuffer();
     const safeBuffer = Buffer.from(arrayBuffer);
@@ -34,9 +40,11 @@ export async function POST(request: Request) {
         });
     const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${command.input.Key}`;
     await s3.send(command);
-      const currentChatId = await getOrCreateChat(
+    let currentChatId = "";
+  if(user){
+     currentChatId = await getOrCreateChat(
       chatId,
-      user.userId
+      user?.userId || ""
     );
     await saveMessage({
       chatId: currentChatId,  
@@ -45,6 +53,7 @@ export async function POST(request: Request) {
       fileUrl: fileUrl,
       fileType: file.type,
     });
+  }
     const extractedText = result.text;
     // const finalPromt = `User Question: ${text}\n\nPDF content: ${extractedText}`;
     console.log("Extracted text:", extractedText);
@@ -53,11 +62,13 @@ export async function POST(request: Request) {
     console.log("Final prompt:", finalPromt);
     const response = await generateResponse(finalPromt);
     console.log("Response:", response);
+    if(user){
  await saveMessage({
       chatId: currentChatId,
       content: response,
       role: "AI",
     });
+  }
     return Response.json({ response: response , fileUrl, fileType: file.type });
 
   } catch (error) {

@@ -1,10 +1,12 @@
 "use client";
 import Header from "../components/Header";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Chat/Sidebar";
 import ChatMessages from "../components/Chat/ChatMessages";
 import ChatInput from "../components/Chat/ChatInput";
 import Footer from "../components/Landing/Footer";
+import { streamMessage } from "../lib/streamingMessage";
+import { useAuth } from "../context/AuthContext";
 
 
 export default function Home() {
@@ -12,13 +14,14 @@ export default function Home() {
   const [inputValue, setInputValue] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
 
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [message, setMessage] = useState<{ content: string, role: 'user' | 'AI' }[]>([]);
   const hasMessage = message.length > 0;
   const [isLoading, setIsLoading] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
 
 
   const handleNewChat = () => {
@@ -27,8 +30,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchChats();
-  }, []);
+    if (isLoggedIn) {
+      fetchChats();
+    }
+  }, [isLoggedIn]);
 
   const handleChatSelect = async (chatId: string) => {
     setChatId(chatId);
@@ -100,23 +105,13 @@ export default function Home() {
         body: JSON.stringify({ message: userMessage, userId, chatId })
       });
       const data = await res.json();
-      const fullText = data.response;
-      let index = 0;
-
-      setMessage(prev => [...prev, { content: " ", role: 'AI' }]);
-      setInterval(() => {
-        setMessage(prev => {
-          const updated = [...prev];
-          updated[updated.length - 1] = {
-            content: fullText.slice(0, index + 1),
-            role: "AI"
-          };
-          return updated;
-        });
-        index++;
-      }, 30);
-      fetchChats();
-      setIsLoading(false);
+      streamMessage({
+        fullText: data.response || "",
+        setMessage,
+        setIsLoading,
+        isLoggedIn,
+        fetchChats
+      });
     }
     // Logic for sending PDF only
     if (selectedFile && selectedFile.type === 'application/pdf') {
@@ -127,22 +122,33 @@ export default function Home() {
       if (inputValue.trim()) {
         formData.append('message', userMessage);
       }
+      setMessage(prev => [
+        ...prev,
+        {
+          content: userMessage,
+          role: "user",
+          fileUrl: URL.createObjectURL(selectedFile),
+          fileType: selectedFile.type
+        }
+      ]);
       setInputValue("");
+      setSelectedFile(null);
       setIsLoading(true);
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
-      setMessage(prev => [...prev, {
-        content: userMessage,
-        role: 'user',
-        fileUrl: data.fileUrl,
-        fileType: data.fileType
-      }]);
-      setMessage(prev => [...prev, { content: data.response, role: 'AI' }]);
-      fetchChats();
-      setIsLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      streamMessage({
+        fullText: data.response || "",
+        setMessage,
+        setIsLoading,
+        isLoggedIn,
+        fetchChats
+      });
     }
     // Logic for sending IMAGE only
     if (selectedFile && selectedFile.type.startsWith('image/')) {
@@ -152,22 +158,33 @@ export default function Home() {
       if (inputValue.trim()) {
         formData.append('message', userMessage);
       }
+      setMessage(prev => [
+        ...prev,
+        {
+          content: userMessage,
+          role: "user",
+          fileUrl: URL.createObjectURL(selectedFile),
+          fileType: selectedFile.type
+        }
+      ]);
       setInputValue("");
+      setSelectedFile(null);
       setIsLoading(true);
       const res = await fetch('/api/image', {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
-      setMessage(prev => [...prev, {
-        content: userMessage,
-        role: 'user',
-        fileUrl: data.fileUrl,
-        fileType: data.fileType
-      }]);
-      setMessage(prev => [...prev, { content: data.response, role: 'AI' }]);
-      fetchChats();
-      setIsLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      streamMessage({
+        fullText: data.response || "",
+        setMessage,
+        setIsLoading,
+        isLoggedIn,
+        fetchChats
+      });
     }
 
     if (selectedFile && selectedFile.type.startsWith('audio/')) {
@@ -177,24 +194,33 @@ export default function Home() {
       if (inputValue.trim()) {
         formData.append('message', userMessage);
       }
+      setMessage(prev => [
+        ...prev,
+        {
+          content: userMessage,
+          role: "user",
+          fileUrl: URL.createObjectURL(selectedFile),
+          fileType: selectedFile.type
+        }
+      ]);
       setInputValue("");
+      setSelectedFile(null);
       setIsLoading(true);
       const res = await fetch('/api/audio', {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
-      setMessage(prev => [...prev, {
-        content: inputValue,
-        role: 'user',
-        fileUrl: data.fileUrl,
-        fileType: data.fileType
-      }]);
-      console.log("data", data.fileUrl);
-      console.log("data", data.fileType);
-      setMessage(prev => [...prev, { content: data.response, role: 'AI' }]);
-      fetchChats();
-      setIsLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      streamMessage({
+        fullText: data.response || "",
+        setMessage,
+        setIsLoading,
+        isLoggedIn,
+        fetchChats
+      });
     }
   }
 
@@ -226,6 +252,8 @@ export default function Home() {
             handlePdfUpload={handlePdfUpload}
             selectedFile={selectedFile}
             setSelectedFile={setSelectedFile}
+            fileInputRef={fileInputRef}
+            isLoading={isLoading}
           />
         </div>
       </main>

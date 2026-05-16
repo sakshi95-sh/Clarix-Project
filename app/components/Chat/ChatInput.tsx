@@ -3,7 +3,9 @@ export default function ChatInput({
     ,handleInputChange,
     inputValue,
     handleImageUpload,handleAudioUpload,handlePdfUpload,
-    selectedFile,setSelectedFile
+    selectedFile,setSelectedFile,
+    fileInputRef,
+    isLoading
 }: 
     {handleSubmitChat: 
         (e: React.FormEvent) => void, 
@@ -13,7 +15,10 @@ export default function ChatInput({
         handleAudioUpload: (e: React.ChangeEvent<HTMLInputElement>) => void,
         handlePdfUpload: (e: React.ChangeEvent<HTMLInputElement>) => void,
         selectedFile: File | null,
-        setSelectedFile: (file: File | null) => void}) {
+        setSelectedFile: (file: File | null) => void,
+        fileInputRef: React.RefObject<HTMLInputElement|null>,
+        isLoading: boolean
+    }) {  
     return (
         <div>
             <div className="main-chat-typing
@@ -40,7 +45,7 @@ export default function ChatInput({
                   className="w-4 h-6" />
                  Image
                 <input id="image-upload" type="file" accept="image/*" className="hidden"
-                  onChange={handleImageUpload} />
+                  onChange={handleImageUpload} ref={fileInputRef} />
               </label>
               <label className="
                flex items-center justify-center gap-1
@@ -79,9 +84,9 @@ export default function ChatInput({
               </label>
             </div>
             {selectedFile && (
-              <div className="text-lg bg-[var(--primary)] w-fit px-4 py-2 rounded-lg flex items-center gap-2">
-                <span>{selectedFile.name}</span>
-                <button onClick={() => setSelectedFile(null)}>✖</button>
+              <div className="text-lg bg-[var(--blue-md)] w-fit px-4 py-2 rounded-lg flex items-center gap-2">
+                <span className="text-[var(--paper)]">{selectedFile.name}</span>
+                <button className="text-[var(--paper)]" onClick={() => setSelectedFile(null)}>✖</button>
               </div>
             )}
             <form className=" flex flex-row   gap-2"
@@ -101,10 +106,11 @@ export default function ChatInput({
                 value={inputValue}
               />
               <button className="bg-[var(--primary)] text-white px-4 py-2 rounded-lg
-        
           text-sm
+          disabled:opacity-50 disabled:cursor-not-allowed
           "
                 type="submit"
+                disabled={isLoading}
               >Send</button>
             </form>
 

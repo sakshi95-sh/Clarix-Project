@@ -8,8 +8,12 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 export async function POST(request: Request) {
   try {
-    const user = await verifyAuth();
-    
+     let user = null;
+    try {
+      user = await verifyAuth();
+    } catch {
+      user = null;
+    }
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const chatId = formData.get("chatId") as string;
@@ -30,7 +34,7 @@ const buffer = Buffer.from(arrayBuffer);
     const speech = await audioToSpeech(file);
     const currentChatId = await getOrCreateChat(
       chatId,
-      user.userId
+      user?.userId || ""
     );
 
     await saveMessage({

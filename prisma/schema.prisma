@@ -44,3 +44,14 @@ model Message{
 
   @@map("messages")
 }
+
+model Feedback {
+  id        String   @id @default(cuid())
+  email     String
+  type      String
+  message   String?
+  rating    Int
+  createdAt DateTime @default(now())
+  
+  @@map("feedback")
+}

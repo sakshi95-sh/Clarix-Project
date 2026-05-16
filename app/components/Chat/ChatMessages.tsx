@@ -42,7 +42,7 @@ export default function ChatMessages(
                 {msg.role === "AI" &&
                   <>
                     <h1 className="text-gray-800 text-sm font-medium tracking-[2px]">{msg.role}</h1>
-                    <div className="border-2 border-[#534ab7] bg-white text-[#534ab7] text-xs tracking-wide p-2 rounded-lg max-w-[70%] leading-[2] min-w-[120px]">
+                    <div className="text-[var(--primary)] text-xs tracking-wide p-2 rounded-lg max-w-[70%] leading-[2] min-w-[120px]">
                       <div className="prose prose-headings:font-bold prose-headings:font-bold prose-sm max-w-none prose-black
     prose-table:w-full prose-table:border prose-table:border-collapse
     prose-th:border prose-td:border

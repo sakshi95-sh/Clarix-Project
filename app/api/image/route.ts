@@ -8,7 +8,12 @@ import { saveMessage } from "@/app/lib/messages";
 
 export async function POST(request: Request) {
   try {
-    const user = await verifyAuth();
+    let user = null;
+    try {
+      user = await verifyAuth();
+    } catch {
+      user = null;
+    }
     const body = await request.formData();
     const file = body.get('file') as File;
     const chatId = body.get('chatId') as string;
@@ -22,26 +27,27 @@ export async function POST(request: Request) {
     await s3.send(command);
     const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${command.input.Key}`;
     const text = await extractTextFromImage(buffer);
-    const currentChatId = await getOrCreateChat(
+    const message = body.get('message');
+    const response = await generateResponse(text + "\n\n" + message);
+    if(user){
+       const currentChatId = await getOrCreateChat(
       chatId,
       user.userId
     );
-    const message = body.get('message');
     await saveMessage({
-      chatId: currentChatId,  
+      chatId: currentChatId,
       content: message as string,
       role: "user",
       fileUrl,
       fileType: file.type,
     });
-    
-    console.log('Image text:', text);
-    const response = await generateResponse(text + "\n\n" + message);
     await saveMessage({
       chatId: currentChatId,
       content: response,
       role: "AI",
     });
+    }    
+    
     return Response.json({ response, fileUrl, fileType: file.type });
   } catch (error) {
     console.error("Image error:", error);

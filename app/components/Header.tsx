@@ -63,7 +63,7 @@ export default function Header() {
                     tracking-wide
                     hover:text-[var(--primary)]   
                     font-normal
-                    hover:shadow-xl  ">Log In</button>
+                    hover:shadow-xs  ">Log In</button>
                         <button onClick={() => setOpenSignup(true)} className="
                     cursor-pointer 
                     bg-[var(--primary)] 
