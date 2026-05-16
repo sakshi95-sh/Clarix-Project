@@ -15,6 +15,9 @@ export default function Sidebar({
 
   const { setOpenLogin } = useModal();
   const { isLoggedIn } = useAuth();
+  if (isLoggedIn === null) {
+   return null;
+}
 
   return (
     <>

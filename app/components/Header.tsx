@@ -17,6 +17,11 @@ export default function Header() {
         isLoggedIn,
         setIsLoggedIn
     } = useAuth();
+     if (isLoggedIn === null) {
+
+        return null;
+
+    }
 
     const handleLogout = async () => {
 
