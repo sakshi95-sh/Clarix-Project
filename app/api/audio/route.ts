@@ -1,5 +1,4 @@
 export const dynamic = "force-dynamic";
-import { audioToSpeech } from '../../lib/audioToSpeech';
 import { generateResponse } from '../../lib/ai';
 import { verifyAuth } from '@/app/lib/auth';
 import { getOrCreateChat } from "@/app/lib/chatIdCreation";
@@ -35,16 +34,16 @@ const buffer = Buffer.from(arrayBuffer);
     const message = formData.get("message") as string;
     const speech = await audioToSpeech(file);
         const response = await generateResponse(speech+ "\n\n" + message);
-
+let currentChatId = "";
       if (user) {
-    const currentChatId = await getOrCreateChat(
+    currentChatId = await getOrCreateChat(
       chatId,
       user?.userId || ""
     );
 
     await saveMessage({
       chatId: currentChatId,
-      content: message || " ",
+      content: message || "Shared voice recording",
       role: "user",
       fileUrl: fileUrl,
       fileType: file.type,
@@ -56,6 +55,7 @@ const buffer = Buffer.from(arrayBuffer);
     });
   }
     return Response.json({ response, 
+      chatId: currentChatId,
       fileUrl: fileUrl,
       fileType: file.type
     });

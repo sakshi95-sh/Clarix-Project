@@ -42,14 +42,15 @@ export async function POST(request: Request) {
      const extractedText = result.text;
     const finalPromt = message + "\n\n" + extractedText;
     const response = await generateResponse(finalPromt);
+    let currentChatId = "";
   if(user){
-  const currentChatId = await getOrCreateChat(
+   currentChatId = await getOrCreateChat(
     chatId,
     user?.userId || ""
   );
     await saveMessage({
       chatId: currentChatId,  
-      content: message || " ",
+      content: message || "Attached file",
       role: "user",
       fileUrl: fileUrl,
       fileType: file.type,
@@ -62,6 +63,7 @@ export async function POST(request: Request) {
   }   
     return Response.json({ 
       response, 
+      chatId: currentChatId,
       fileUrl, 
       fileType: file.type 
     });

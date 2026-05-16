@@ -53,9 +53,10 @@ export async function POST(request: Request) {
     const response = await generateResponse(
       text + "\n\n" + message
     );
+    let currentChatId = "";
         if (user) {
 
-    const currentChatId = await getOrCreateChat(
+     currentChatId = await getOrCreateChat(
       chatId,
       user?.userId || ""
     );
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
 
       await saveMessage({
         chatId: currentChatId,
-        content: message || " ",
+        content: message || "Shared an image",
         role: "user",
         fileUrl,
         fileType: file.type,
@@ -79,6 +80,7 @@ export async function POST(request: Request) {
 
     return Response.json({
       response,
+      chatId: currentChatId,
       fileUrl,
       fileType: file.type,
     });

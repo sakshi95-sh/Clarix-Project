@@ -16,12 +16,13 @@ export async function POST(request: NextRequest) {
       user = null;
     }
     const aiResponse = await generateResponse(message);
+    let currentChatId = "";
     if(user)
     {
       if (!message) {
       return NextResponse.json({ response: "Failed to generate response" });
     }
-    const currentChatId = await getOrCreateChat(
+     currentChatId = await getOrCreateChat(
       chatId,
       user?.userId || ""
     );
@@ -36,28 +37,7 @@ export async function POST(request: NextRequest) {
       role: "AI",
     });
     }
-return NextResponse.json({ response: aiResponse });    
-    // if (!message) {
-    //   return NextResponse.json({ response: "Failed to generate response" });
-    // }
-    // const currentChatId = await getOrCreateChat(
-    //   chatId,
-    //   user?.userId || ""
-    // );
-    // await saveMessage({
-    //   chatId: currentChatId,
-    //   content: message,
-    //   role: "user",
-    // });
-    // const reply = await generateResponse(message);
-
-    // await saveMessage({
-    //   chatId: currentChatId,
-    //   content: reply,
-    //   role: "AI",
-    // });
-
-    // return NextResponse.json({ response: reply });
+return NextResponse.json({ response: aiResponse, chatId: currentChatId });    
 
   } catch (error) {
     console.error("Chat error:", error);

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import AppName from "./AppName";
-import { useAuth } from "../context/AuthContext";
 import { useModal } from "../context/ModalProvider";
 
 export default function SignupModal({
@@ -12,52 +11,69 @@ export default function SignupModal({
   onClose: () => void
 }) {
 
-  const { setIsLoggedIn } = useAuth();
   const { setOpenLogin } = useModal();
 
   const [isError, setIsError] = useState("");
-  const [status, setStatus] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
     e.preventDefault();
 
+    if (isLoading) return;
+
+    setIsLoading(true);
+
     const form = e.currentTarget;
 
     const formData = new FormData(form);
 
-    const res = await fetch("/api/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: formData.get("username") as string,
-        name: formData.get("name") as string,
-        email: formData.get("email") as string,
-        password: formData.get("password") as string,
-      }),
-    });
+    try {
 
-    if (res.ok) {
-
-      setIsError("");
-
-      form.reset();
-
-      toast.success("Account created 🎉");
-
-      setIsLoggedIn(true);
-
-      onClose();
-
-    } else {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.get("username") as string,
+          name: formData.get("name") as string,
+          email: formData.get("email") as string,
+          password: formData.get("password") as string,
+        }),
+      });
 
       const data = await res.json();
 
-      setIsError(data.error);
+      if (res.ok) {
 
-      setIsError(data.message || "Something went wrong");
+        setIsError("");
+
+        form.reset();
+
+        toast.success("Account created 🎉");
+
+        onClose();
+
+        setOpenLogin(true);
+
+      } else {
+
+        setIsError(
+          data.error ||
+          data.message ||
+          "Something went wrong"
+        );
+
+      }
+
+    } catch {
+
+      setIsError("Something went wrong");
+
+    } finally {
+
+      setIsLoading(false);
 
     }
 
@@ -85,6 +101,7 @@ export default function SignupModal({
         {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
+          disabled={isLoading}
           className="
           absolute top-4 right-4
           w-8 h-8
@@ -92,6 +109,8 @@ export default function SignupModal({
           rounded-full
           bg-gray-100
           hover:bg-gray-200
+          disabled:opacity-50
+          disabled:cursor-not-allowed
           "
         >
           ✕
@@ -133,12 +152,14 @@ export default function SignupModal({
             name="username"
             placeholder="Username"
             required
+            disabled={isLoading}
             className="
             h-11 w-full
             rounded-lg
             border border-gray-300
             px-3
             bg-[#F8F7F2]
+            disabled:opacity-60
             "
           />
 
@@ -146,12 +167,14 @@ export default function SignupModal({
             type="text"
             name="name"
             placeholder="Full name (optional)"
+            disabled={isLoading}
             className="
             h-11 w-full
             rounded-lg
             border border-gray-300
             px-3
             bg-[#F8F7F2]
+            disabled:opacity-60
             "
           />
 
@@ -160,12 +183,14 @@ export default function SignupModal({
             name="email"
             placeholder="Email"
             required
+            disabled={isLoading}
             className="
             h-11 w-full
             rounded-lg
             border border-gray-300
             px-3
             bg-[#F8F7F2]
+            disabled:opacity-60
             "
           />
 
@@ -174,17 +199,20 @@ export default function SignupModal({
             name="password"
             placeholder="Password"
             required
+            disabled={isLoading}
             className="
             h-11 w-full
             rounded-lg
             border border-gray-300
             px-3
             bg-[#F8F7F2]
+            disabled:opacity-60
             "
           />
 
           <button
             type="submit"
+            disabled={isLoading}
             className="
             h-11 w-full
             rounded-lg
@@ -192,9 +220,13 @@ export default function SignupModal({
             text-white
             font-medium
             mt-2
+            disabled:opacity-60
+            disabled:cursor-not-allowed
             "
           >
-            Create Account →
+            {isLoading
+              ? "Creating account..."
+              : "Create Account →"}
           </button>
 
         </form>
@@ -211,6 +243,7 @@ export default function SignupModal({
 
           <button
             type="button"
+            disabled={isLoading}
             onClick={() => {
               onClose();
               setOpenLogin(true);
@@ -219,6 +252,7 @@ export default function SignupModal({
             text-[#4F46E5]
             font-medium
             hover:underline
+            disabled:opacity-50
             "
           >
             Log in

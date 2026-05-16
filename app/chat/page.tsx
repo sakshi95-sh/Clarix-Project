@@ -99,6 +99,7 @@ export default function Home() {
         body: JSON.stringify({ message: userMessage, userId, chatId })
       });
       const data = await res.json();
+      setChatId(data.chatId)
       streamMessage({
         fullText: data.response || "",
         setMessage,
@@ -133,6 +134,7 @@ export default function Home() {
         body: formData,
       });
       const data = await res.json();
+      setChatId(data.chatId)
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -170,6 +172,7 @@ export default function Home() {
         body: formData,
       });
       const data = await res.json();
+      setChatId(data.chatId)
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -207,6 +210,7 @@ export default function Home() {
         body: formData,
       });
       const data = await res.json();
+      setChatId(data.chatId)
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }

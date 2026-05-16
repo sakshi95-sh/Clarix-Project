@@ -7,7 +7,11 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useModal } from "../context/ModalProvider";
 
-export default function LoginModal({ onClose }: { onClose: () => void }) {
+export default function LoginModal({
+    onClose
+}: {
+    onClose: () => void
+}) {
 
     const { setIsLoggedIn } = useAuth();
     const { setOpenSignup } = useModal();
@@ -15,46 +19,75 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
     const router = useRouter();
 
     const [isError, setIsError] = useState("");
-    const [status, setStatus] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
 
         e.preventDefault();
 
+        if (isLoading) return;
+
+        setIsLoading(true);
+
         const form = e.currentTarget;
+
         const formData = new FormData(form);
 
-        const res = await fetch("/api/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email: formData.get("email") as string,
-                password: formData.get("password") as string,
-            }),
-        });
+        try {
 
-        const data = await res.json();
+            const res = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: formData.get("email") as string,
+                    password: formData.get("password") as string,
+                }),
+            });
 
-        if (res.ok) {
+            const data = await res.json();
 
-            setIsError("");
+            if (res.ok) {
 
-            localStorage.setItem("userId", data.userId);
-            localStorage.setItem("userName", data.userName);
+                setIsError("");
 
-            toast.success("Logged in 🎉");
+                localStorage.setItem(
+                    "userId",
+                    data.userId
+                );
 
-            setIsLoggedIn(true);
+                localStorage.setItem(
+                    "userName",
+                    data.userName
+                );
 
-            onClose();
+                toast.success("Logged in 🎉");
 
-            router.push("/chat");
+                setIsLoggedIn(true);
 
-        } else {
+                onClose();
 
-            setIsError(data.message || "Invalid email or password");
+                router.push("/chat");
+
+            } else {
+
+                setIsError(
+                    data.message ||
+                    "Invalid email or password"
+                );
+
+            }
+
+        } catch {
+
+            setIsError("Something went wrong");
+
+        } finally {
+
+            setIsLoading(false);
 
         }
 
@@ -81,6 +114,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                 {/* CLOSE */}
                 <button
                     onClick={onClose}
+                    disabled={isLoading}
                     className="
                     absolute top-4 right-4
                     w-8 h-8
@@ -88,6 +122,8 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                     rounded-full
                     bg-gray-100
                     hover:bg-gray-200
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
                     "
                 >
                     ✕
@@ -119,7 +155,12 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                 >
 
                     {isError && (
-                        <p className="text-red-500 text-sm mb-2 text-center">
+                        <p className="
+                        text-red-500
+                        text-sm
+                        mb-2
+                        text-center
+                        ">
                             {isError}
                         </p>
                     )}
@@ -129,12 +170,14 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                         name="email"
                         placeholder="Email"
                         required
+                        disabled={isLoading}
                         className="
                         h-11 w-full
                         rounded-lg
                         border
                         px-3
                         bg-[#F8F7F2]
+                        disabled:opacity-60
                         "
                     />
 
@@ -143,17 +186,20 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                         name="password"
                         placeholder="Password"
                         required
+                        disabled={isLoading}
                         className="
                         h-11 w-full
                         rounded-lg
                         border
                         px-3
                         bg-[#F8F7F2]
+                        disabled:opacity-60
                         "
                     />
 
                     <button
                         type="submit"
+                        disabled={isLoading}
                         className="
                         h-11 w-full
                         rounded-lg
@@ -161,9 +207,13 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                         text-white
                         font-medium
                         mt-2
+                        disabled:opacity-60
+                        disabled:cursor-not-allowed
                         "
                     >
-                        Log in →
+                        {isLoading
+                            ? "Logging in..."
+                            : "Log in →"}
                     </button>
 
                 </form>
@@ -180,6 +230,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
 
                     <button
                         type="button"
+                        disabled={isLoading}
                         onClick={() => {
                             onClose();
                             setOpenSignup(true);
@@ -188,6 +239,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
                         text-[#4F46E5]
                         font-medium
                         hover:underline
+                        disabled:opacity-50
                         "
                     >
                         Sign up free
