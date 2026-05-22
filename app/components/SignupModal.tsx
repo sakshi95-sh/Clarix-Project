@@ -5,19 +5,13 @@ import toast from "react-hot-toast";
 import AppName from "./AppName";
 import { useModal } from "../context/ModalProvider";
 
-export default function SignupModal({
-  onClose
-}: {
-  onClose: () => void
-}) {
-
+export default function SignupModal({ onClose }: { onClose: () => void }) {
   const { setOpenLogin } = useModal();
 
   const [isError, setIsError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-
     e.preventDefault();
 
     if (isLoading) return;
@@ -29,7 +23,6 @@ export default function SignupModal({
     const formData = new FormData(form);
 
     try {
-
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: {
@@ -46,7 +39,6 @@ export default function SignupModal({
       const data = await res.json();
 
       if (res.ok) {
-
         setIsError("");
 
         form.reset();
@@ -56,39 +48,27 @@ export default function SignupModal({
         onClose();
 
         setOpenLogin(true);
-
       } else {
-
-        setIsError(
-          data.error ||
-          data.message ||
-          "Something went wrong"
-        );
-
+        setIsError(data.error || data.message || "Something went wrong");
       }
-
     } catch {
-
       setIsError("Something went wrong");
-
     } finally {
-
       setIsLoading(false);
-
     }
-
   };
 
   return (
-
-    <div className="
+    <div
+      className="
     fixed inset-0 z-[999]
     flex items-center justify-center
     bg-black/40 backdrop-blur-md
-    ">
-
+    "
+    >
       {/* MODAL BOX */}
-      <div className="
+      <div
+        className="
       relative
       w-[90%]
       max-w-[420px]
@@ -96,8 +76,8 @@ export default function SignupModal({
       bg-white
       p-8
       shadow-2xl
-      ">
-
+      "
+      >
         {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
@@ -123,28 +103,17 @@ export default function SignupModal({
 
         {/* HEADER */}
         <div className="text-center mb-6">
-
-          <h1 className="text-2xl font-bold mt-4">
-            Create your account
-          </h1>
+          <h1 className="text-2xl font-bold mt-4">Create your account</h1>
 
           <p className="text-sm text-gray-500 mt-1">
             Free — no credit card required
           </p>
-
         </div>
 
         {/* FORM */}
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={onSubmit}
-          noValidate
-        >
-
+        <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
           {isError && (
-            <p className="text-red-500 text-sm mb-2 text-center">
-              {isError}
-            </p>
+            <p className="text-red-500 text-sm mb-2 text-center">{isError}</p>
           )}
 
           <input
@@ -224,23 +193,20 @@ export default function SignupModal({
             disabled:cursor-not-allowed
             "
           >
-            {isLoading
-              ? "Creating account..."
-              : "Create Account →"}
+            {isLoading ? "Creating account..." : "Create Account →"}
           </button>
-
         </form>
 
         {/* FOOTER */}
-        <p className="
+        <p
+          className="
         text-sm
         text-center
         text-gray-500
         mt-4
-        ">
-
+        "
+        >
           Already have an account?{" "}
-
           <button
             type="button"
             disabled={isLoading}
@@ -257,11 +223,8 @@ export default function SignupModal({
           >
             Log in
           </button>
-
         </p>
-
       </div>
-
     </div>
   );
 }

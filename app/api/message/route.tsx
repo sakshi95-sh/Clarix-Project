@@ -1,14 +1,7 @@
-export const dynamic = "force-dynamic";
-
 import { generateResponse } from "../../lib/ai";
-
-import { NextRequest, NextResponse } from "next/server";
-
-import { verifyAuth } from "@/app/lib/auth";
-
-import { saveMessage } from "@/app/lib/messages";
-
-import { getOrCreateChat } from "@/app/lib/chatIdCreation";
+import { NextRequest } from "next/server";
+import { saveMessage } from "../../lib/messages";
+import { getOrCreateChat } from "../../lib/chatIdCreation";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,25 +9,25 @@ export async function POST(request: NextRequest) {
 
     const { message, chatId } = body;
 
+    const userId = request.headers.get("x-user-id");
+
+    // VALIDATION FIRST
     if (!message) {
-      return NextResponse.json(
-        { error: "Message is required" },
-        { status: 400 },
+      return Response.json(
+        {
+          error: "Message is required",
+        },
+        {
+          status: 400,
+        },
       );
-    }
-
-    let user = null;
-
-    try {
-      user = await verifyAuth();
-    } catch {
-      user = null;
     }
 
     let currentChatId = "";
 
-    if (user) {
-      currentChatId = await getOrCreateChat(chatId, user?.userId || "");
+    // SAVE USER MESSAGE
+    if (userId) {
+      currentChatId = await getOrCreateChat(chatId, userId);
 
       await saveMessage({
         chatId: currentChatId,
@@ -55,6 +48,13 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Chat error:", error);
 
-    return Response.json({ error: "Failed to process chat" }, { status: 500 });
+    return Response.json(
+      {
+        error: "Failed to process chat",
+      },
+      {
+        status: 500,
+      },
+    );
   }
 }

@@ -1,16 +1,8 @@
-export const dynamic = "force-dynamic";
-import { verifyAuth } from "@/app/lib/auth";
-import { prisma } from "@/app/lib/prisma";
+import { prisma } from "../../lib/prisma";
 
 export async function GET(request: Request) {
-  let user = null;
-  try {
-    user = await verifyAuth();
-  } catch {
-    user = null;
-  }
-
-  if (user) {
+  const userId = request.headers.get("x-user-id");
+  if (userId) {
     const { searchParams } = new URL(request.url);
     const chatId = searchParams.get("chatId");
 

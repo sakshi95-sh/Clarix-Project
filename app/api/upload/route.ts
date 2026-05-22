@@ -1,79 +1,78 @@
 export const dynamic = "force-dynamic";
+
 import { extractTextFromPDF } from "../../lib/pdfService";
+
 import { generateResponse } from "../../lib/ai";
-import { verifyAuth } from "@/app/lib/auth";
+
 import { getOrCreateChat } from "@/app/lib/chatIdCreation";
+
 import { saveMessage } from "@/app/lib/messages";
-import { s3 } from "@/app/lib/s3";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+
+import { uploadFile } from "@/app/lib/s3";
+
 export async function POST(request: Request) {
   try {
-       let user = null;
-    try {
-      user = await verifyAuth();
-    } catch {
-      user = null;
-    }
+    const userId = request.headers.get("x-user-id");
+
     const formData = await request.formData();
-    const file = formData.get('file') as File;
-   const message = formData.get("message") as string;
-    const chatId = formData.get('chatId') as string;
+
+    const file = formData.get("file") as File;
+
+    const chatId = formData.get("chatId") as string;
+
+    const message = formData.get("message") as string;
+
     if (!file) {
-      return Response.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      );
+      return Response.json({ error: "No file provided" }, { status: 400 });
     }
-   
-    // convert file → buffer
+
+    // PDF BUFFER
     const arrayBuffer = await file.arrayBuffer();
-    const safeBuffer = Buffer.from(arrayBuffer);
-    const uint8Array = new Uint8Array(safeBuffer);
-    const result = await extractTextFromPDF(uint8Array);
 
-    const command = new PutObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME!,
-          Key: `${Date.now()}-${file.name}`,
-          Body: safeBuffer,
-          ContentType: file.type,
-        });
-    const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${command.input.Key}`;
-    await s3.send(command);
-     const extractedText = result.text;
-    const finalPromt = message + "\n\n" + extractedText;
-    const response = await generateResponse(finalPromt);
+    const buffer = Buffer.from(arrayBuffer);
+    const uint8Array = new Uint8Array(buffer);
+
+    // S3 UPLOAD
+    const { url: fileUrl } = await uploadFile(file);
+
+    // PDF TEXT EXTRACTION
+
+    const { text } = await extractTextFromPDF(uint8Array);
+
     let currentChatId = "";
-  if(user){
-   currentChatId = await getOrCreateChat(
-    chatId,
-    user?.userId || ""
-  );
-    await saveMessage({
-      chatId: currentChatId,  
-      content: message || "Attached file",
-      role: "user",
-      fileUrl: fileUrl,
-      fileType: file.type,
-    });
-     await saveMessage({
-      chatId: currentChatId,
-      content: response,
-      role: "AI",
-    });
-  }   
-    return Response.json({ 
-      response, 
-      chatId: currentChatId,
-      fileUrl, 
-      fileType: file.type 
-    });
 
+    // SAVE USER MESSAGE
+    if (userId) {
+      currentChatId = await getOrCreateChat(chatId, userId);
+
+      await saveMessage({
+        chatId: currentChatId,
+        content: message || "Shared a PDF",
+        role: "user",
+        fileUrl: fileUrl,
+        fileType: file.type,
+      });
+    }
+
+    // REAL STREAM
+    const stream = await generateResponse(text + "\n\n" + message);
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "x-chat-id": currentChatId,
+      },
+    });
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error("Error processing PDF:", error);
+
     return Response.json(
-      { error: 'Failed to process upload' },
-      { status: 500 }
+      {
+        error: "Failed to process PDF",
+      },
+      {
+        status: 500,
+      },
     );
   }
 }
-

@@ -1,29 +1,28 @@
-import { useAuth } from "../../context/AuthContext";
-import { useModal } from "../../context/ModalProvider";
+import { useAuth } from "../context/AuthContext";
+import { useModal } from "../context/ModalProvider";
 
 export default function Sidebar({
   chatHistory,
   handleChatSelect,
   handleNewChat,
-  chatId
+  chatId,
 }: {
-  chatHistory: any[],
-  handleChatSelect: (chatId: string) => void,
-  handleNewChat: () => void,
-  chatId: string
+  chatHistory: any[];
+  handleChatSelect: (chatId: string) => void;
+  handleNewChat: () => void;
+  chatId: string;
 }) {
-
   const { setOpenLogin } = useModal();
   const { isLoggedIn } = useAuth();
   if (isLoggedIn === null) {
-   return null;
-}
+    return null;
+  }
 
   return (
     <>
       {!isLoggedIn ? (
-
-        <div className="
+        <div
+          className="
         sidebar
         w-[20%]
         flex
@@ -32,10 +31,11 @@ export default function Sidebar({
         border-r
         border-[var(--border-color)]
         h-full
-        ">
-
+        "
+        >
           {/* FIXED TOP */}
-          <div className="
+          <div
+            className="
           px-4
           py-6
           border-b
@@ -44,9 +44,10 @@ export default function Sidebar({
           sticky
           top-0
           z-10
-          ">
-
-            <button className="
+          "
+          >
+            <button
+              className="
             flex items-center justify-center gap-2
             w-full
             bg-gradient-to-r from-[#7c6cff] to-[#534ab7]
@@ -57,41 +58,37 @@ export default function Sidebar({
             tracking-[2px]
             shadow-sm
             opacity-60
-            cursor-not-allowed">
-
-              <img
-                src="/icon-plus.svg"
-                alt="plus-icon"
-                className="w-5 h-5"
-              />
-
+            cursor-not-allowed"
+            >
+              <img src="/icon-plus.svg" alt="plus-icon" className="w-5 h-5" />
               New Chat
             </button>
-
           </div>
 
           {/* SCROLL AREA */}
-          <div className="
+          <div
+            className="
           flex-1
           overflow-y-auto
           px-4
           py-6
-          ">
-
+          "
+          >
             <div className="flex flex-col gap-3">
-
-              <label className="
+              <label
+                className="
               text-xs
               tracking-[5px]
               uppercase
               text-[#9d958f]
-              font-semibold">
-
+              font-semibold"
+              >
                 Recent
               </label>
 
               {/* Locked Card */}
-              <div className="
+              <div
+                className="
               bg-[#f7f5ff]
               border border-[#d9d3ff]
               rounded-3xl
@@ -99,31 +96,29 @@ export default function Sidebar({
               flex flex-col items-center
               justify-center
               gap-5
-              text-center">
-
-                <div className="text-2xl">
-                  🔒
-                </div>
+              text-center"
+              >
+                <div className="text-2xl">🔒</div>
 
                 <div className="flex flex-col gap-2">
-
-                  <h1 className="
+                  <h1
+                    className="
                   text-[#534ab7]
                   text-lg
                   font-semibold
-                  leading-[1.3]">
-
+                  leading-[1.3]"
+                  >
                     Sign in to save chats
                   </h1>
 
-                  <p className="
+                  <p
+                    className="
                   text-[#8d84d8]
                   text-sm
-                  leading-[1.5]">
-
+                  leading-[1.5]"
+                  >
                     Your history appears here after logging in
                   </p>
-
                 </div>
 
                 <button
@@ -139,22 +134,17 @@ export default function Sidebar({
                   font-semibold
                   tracking-wide
                   transition-all duration-200
-                  cursor-pointer">
-
+                  cursor-pointer"
+                >
                   Log In
                 </button>
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       ) : (
-
-        <div className="
+        <div
+          className="
         sidebar
         w-[20%]
         flex
@@ -163,10 +153,11 @@ export default function Sidebar({
         border-r
         border-[var(--border-color)]
         h-full
-        ">
-
+        "
+        >
           {/* FIXED TOP */}
-          <div className="
+          <div
+            className="
           flex items-center justify-center
           px-4
           py-4
@@ -176,8 +167,8 @@ export default function Sidebar({
           sticky
           top-0
           z-10
-          ">
-
+          "
+          >
             <button
               onClick={handleNewChat}
               className="
@@ -191,24 +182,23 @@ export default function Sidebar({
               px-4 py-3
               hover:opacity-90
               transition-all
-              ">
-
+              "
+            >
               <img
                 src="/icon-plus.svg"
                 alt="chat-icon"
                 className="text-center w-5 h-5"
               />
 
-              <h1 className="
+              <h1
+                className="
               text-sm
               font-medium
-              tracking-[2px]">
-
+              tracking-[2px]"
+              >
                 New Chat
               </h1>
-
             </button>
-
           </div>
 
           {/* SCROLLABLE CHATS */}
@@ -220,57 +210,48 @@ export default function Sidebar({
             px-4
             py-4
             flex flex-col gap-4
-            ">
-
-            <label className="
+            "
+          >
+            <label
+              className="
             text-sm
             text-[var(--text-muted)]
-            tracking-wider">
-
+            tracking-wider"
+            >
               Recent Chats
             </label>
 
             <div className="flex flex-col gap-1">
-
               {chatHistory?.map((chat) => (
-
                 <div
                   key={chat.id}
                   className={`
                   flex items-center gap-2 px-2 py-2 rounded-md cursor-pointer
-                  ${chat.id === chatId
+                  ${
+                    chat.id === chatId
                       ? "bg-[var(--blue-lt)] text-[var(--primary)]"
                       : "hover:bg-[#f2f0ff] text-gray-800"
-                    }`}
-                  onClick={() => handleChatSelect(chat.id)}>
+                  }`}
+                  onClick={() => handleChatSelect(chat.id)}
+                >
+                  <img src="/icon-clock.svg" alt="chat-icon" className="w-4" />
 
-                  <img
-                    src="/icon-clock.svg"
-                    alt="chat-icon"
-                    className="w-4"
-                  />
-
-                  <h1 className="
+                  <h1
+                    className="
                   capitalize
                   text-sm
                   font-medium
                   tracking-[2px]
                   truncate
-                  w-full">
-
+                  w-full"
+                  >
                     {chat.preview}
                   </h1>
-
                 </div>
-
               ))}
-
             </div>
-
           </div>
-
         </div>
-
       )}
     </>
   );

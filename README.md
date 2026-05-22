@@ -9,6 +9,7 @@ The application combines OCR, AI-generated responses, audio transcription, persi
 # Features
 
 ## Authentication
+
 - User Signup
 - User Login
 - Logout functionality
@@ -19,6 +20,7 @@ The application combines OCR, AI-generated responses, audio transcription, persi
 ---
 
 # AI Chat System
+
 - AI-powered conversational interface
 - Real-time fake streaming AI responses
 - Persistent chat history
@@ -30,15 +32,18 @@ The application combines OCR, AI-generated responses, audio transcription, persi
 # File Processing
 
 ## Image Upload
+
 - Upload JPG, JPEG, PNG, WEBP
 - OCR text extraction
 - AI-based image analysis
 
 ## PDF Upload
+
 - PDF text extraction
 - AI-generated summaries and responses
 
 ## Audio Upload
+
 - Upload MP3 and WAV files
 - Audio transcription support
 - AI-generated insights
@@ -46,6 +51,7 @@ The application combines OCR, AI-generated responses, audio transcription, persi
 ---
 
 # Frontend
+
 - Next.js
 - React
 - TypeScript
@@ -55,6 +61,7 @@ The application combines OCR, AI-generated responses, audio transcription, persi
 ---
 
 # Backend
+
 - Next.js API Routes
 - Prisma ORM
 - PostgreSQL
@@ -64,6 +71,7 @@ The application combines OCR, AI-generated responses, audio transcription, persi
 ---
 
 # UI/UX
+
 - Responsive SaaS-inspired design
 - Sidebar navigation
 - Modal-based interactions

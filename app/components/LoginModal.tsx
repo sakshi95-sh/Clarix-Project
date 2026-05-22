@@ -7,101 +7,74 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useModal } from "../context/ModalProvider";
 
-export default function LoginModal({
-    onClose
-}: {
-    onClose: () => void
-}) {
+export default function LoginModal({ onClose }: { onClose: () => void }) {
+  const { setIsLoggedIn } = useAuth();
+  const { setOpenSignup } = useModal();
 
-    const { setIsLoggedIn } = useAuth();
-    const { setOpenSignup } = useModal();
+  const router = useRouter();
 
-    const router = useRouter();
+  const [isError, setIsError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-    const [isError, setIsError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    const onSubmit = async (
-        e: React.FormEvent<HTMLFormElement>
-    ) => {
+    if (isLoading) return;
 
-        e.preventDefault();
+    setIsLoading(true);
 
-        if (isLoading) return;
+    const form = e.currentTarget;
 
-        setIsLoading(true);
+    const formData = new FormData(form);
 
-        const form = e.currentTarget;
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.get("email") as string,
+          password: formData.get("password") as string,
+        }),
+      });
 
-        const formData = new FormData(form);
+      const data = await res.json();
 
-        try {
+      if (res.ok) {
+        setIsError("");
 
-            const res = await fetch("/api/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: formData.get("email") as string,
-                    password: formData.get("password") as string,
-                }),
-            });
+        localStorage.setItem("userId", data.userId);
 
-            const data = await res.json();
+        localStorage.setItem("userName", data.userName);
 
-            if (res.ok) {
+        toast.success("Logged in 🎉");
 
-                setIsError("");
+        setIsLoggedIn(true);
 
-                localStorage.setItem(
-                    "userId",
-                    data.userId
-                );
+        onClose();
 
-                localStorage.setItem(
-                    "userName",
-                    data.userName
-                );
+        router.push("/chat");
+      } else {
+        setIsError(data.message || "Invalid email or password");
+      }
+    } catch {
+      setIsError("Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-                toast.success("Logged in 🎉");
-
-                setIsLoggedIn(true);
-
-                onClose();
-
-                router.push("/chat");
-
-            } else {
-
-                setIsError(
-                    data.message ||
-                    "Invalid email or password"
-                );
-
-            }
-
-        } catch {
-
-            setIsError("Something went wrong");
-
-        } finally {
-
-            setIsLoading(false);
-
-        }
-
-    };
-
-    return (
-
-        <div className="
+  return (
+    <div
+      className="
         fixed inset-0 z-[999]
         flex items-center justify-center
         bg-black/40 backdrop-blur-md
-        ">
-
-            <div className="
+        "
+    >
+      <div
+        className="
             relative
             w-[90%]
             max-w-[420px]
@@ -109,13 +82,13 @@ export default function LoginModal({
             bg-white
             p-8
             shadow-2xl
-            ">
-
-                {/* CLOSE */}
-                <button
-                    onClick={onClose}
-                    disabled={isLoading}
-                    className="
+            "
+      >
+        {/* CLOSE */}
+        <button
+          onClick={onClose}
+          disabled={isLoading}
+          className="
                     absolute top-4 right-4
                     w-8 h-8
                     flex items-center justify-center
@@ -125,53 +98,44 @@ export default function LoginModal({
                     disabled:opacity-50
                     disabled:cursor-not-allowed
                     "
-                >
-                    ✕
-                </button>
+        >
+          ✕
+        </button>
 
-                {/* LOGO */}
-                <div className="mb-6 flex justify-center">
-                    <AppName />
-                </div>
+        {/* LOGO */}
+        <div className="mb-6 flex justify-center">
+          <AppName />
+        </div>
 
-                {/* HEADER */}
-                <div className="text-center mb-6">
+        {/* HEADER */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold mt-4">Welcome back</h1>
 
-                    <h1 className="text-2xl font-bold mt-4">
-                        Welcome back
-                    </h1>
+          <p className="text-sm text-gray-500 mt-1">Log in to your account</p>
+        </div>
 
-                    <p className="text-sm text-gray-500 mt-1">
-                        Log in to your account
-                    </p>
-
-                </div>
-
-                {/* FORM */}
-                <form
-                    className="flex flex-col gap-4"
-                    onSubmit={onSubmit}
-                    noValidate
-                >
-
-                    {isError && (
-                        <p className="
+        {/* FORM */}
+        <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+          {isError && (
+            <p
+              className="
                         text-red-500
                         text-sm
                         mb-2
                         text-center
-                        ">
-                            {isError}
-                        </p>
-                    )}
+                        "
+            >
+              {isError}
+            </p>
+          )}
 
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        required
-                        disabled={isLoading}
-                        className="
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            required
+            disabled={isLoading}
+            className="
                         h-11 w-full
                         rounded-lg
                         border
@@ -179,15 +143,15 @@ export default function LoginModal({
                         bg-[#F8F7F2]
                         disabled:opacity-60
                         "
-                    />
+          />
 
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        required
-                        disabled={isLoading}
-                        className="
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+            disabled={isLoading}
+            className="
                         h-11 w-full
                         rounded-lg
                         border
@@ -195,12 +159,12 @@ export default function LoginModal({
                         bg-[#F8F7F2]
                         disabled:opacity-60
                         "
-                    />
+          />
 
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="
                         h-11 w-full
                         rounded-lg
                         bg-[#4F46E5]
@@ -210,46 +174,39 @@ export default function LoginModal({
                         disabled:opacity-60
                         disabled:cursor-not-allowed
                         "
-                    >
-                        {isLoading
-                            ? "Logging in..."
-                            : "Log in →"}
-                    </button>
+          >
+            {isLoading ? "Logging in..." : "Log in →"}
+          </button>
+        </form>
 
-                </form>
-
-                {/* FOOTER */}
-                <p className="
+        {/* FOOTER */}
+        <p
+          className="
                 text-sm
                 text-center
                 text-gray-500
                 mt-4
-                ">
-
-                    Don’t have an account?{" "}
-
-                    <button
-                        type="button"
-                        disabled={isLoading}
-                        onClick={() => {
-                            onClose();
-                            setOpenSignup(true);
-                        }}
-                        className="
+                "
+        >
+          Don’t have an account?{" "}
+          <button
+            type="button"
+            disabled={isLoading}
+            onClick={() => {
+              onClose();
+              setOpenSignup(true);
+            }}
+            className="
                         text-[#4F46E5]
                         font-medium
                         hover:underline
                         disabled:opacity-50
                         "
-                    >
-                        Sign up free
-                    </button>
-
-                </p>
-
-            </div>
-
-        </div>
-
-    );
+          >
+            Sign up free
+          </button>
+        </p>
+      </div>
+    </div>
+  );
 }

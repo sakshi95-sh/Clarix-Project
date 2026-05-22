@@ -1,23 +1,18 @@
 export const dynamic = "force-dynamic";
+
 import { extractTextFromImage } from "../../lib/ocrService";
+
 import { generateResponse } from "../../lib/ai";
-import { s3 } from "@/app/lib/s3";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+
+import { uploadFile } from "@/app/lib/s3";
+
 import { getOrCreateChat } from "@/app/lib/chatIdCreation";
-import { verifyAuth } from "@/app/lib/auth";
+
 import { saveMessage } from "@/app/lib/messages";
 
 export async function POST(request: Request) {
-
   try {
-
-    let user = null;
-
-    try {
-      user = await verifyAuth();
-    } catch {
-      user = null;
-    }
+    const userId = request.headers.get("x-user-id");
 
     const body = await request.formData();
 
@@ -28,39 +23,23 @@ export async function POST(request: Request) {
     const message = body.get("message") as string;
 
     if (!file) {
-      return Response.json(
-        { error: "No file provided" },
-        { status: 400 }
-      );
+      return Response.json({ error: "No file provided" }, { status: 400 });
     }
 
+    // IMAGE BUFFER
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    const command = new PutObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: `${Date.now()}-${file.name}`,
-      Body: buffer,
-      ContentType: file.type,
-    });
+    // S3 UPLOAD
+    const { url: fileUrl } = await uploadFile(file);
 
-    await s3.send(command);
-
-    const fileUrl =
-      `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${command.input.Key}`;
-
+    // OCR
     const text = await extractTextFromImage(buffer);
 
-    const response = await generateResponse(
-      text + "\n\n" + message
-    );
     let currentChatId = "";
-        if (user) {
 
-     currentChatId = await getOrCreateChat(
-      chatId,
-      user?.userId || ""
-    );
-
+    // SAVE USER MESSAGE
+    if (userId) {
+      currentChatId = await getOrCreateChat(chatId, userId);
 
       await saveMessage({
         chatId: currentChatId,
@@ -69,30 +48,20 @@ export async function POST(request: Request) {
         fileUrl,
         fileType: file.type,
       });
-
-      await saveMessage({
-        chatId: currentChatId,
-        content: response,
-        role: "AI",
-      });
-
     }
 
-    return Response.json({
-      response,
-      chatId: currentChatId,
-      fileUrl,
-      fileType: file.type,
+    // REAL STREAM
+    const stream = await generateResponse(text + "\n\n" + message);
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "x-chat-id": currentChatId,
+      },
     });
-
   } catch (error) {
-
     console.error("Image error:", error);
 
-    return Response.json(
-      { error: "Failed to process image" },
-      { status: 500 }
-    );
-
+    return Response.json({ error: "Failed to process image" }, { status: 500 });
   }
 }

@@ -7,38 +7,31 @@ export async function GET(request: NextRequest) {
     const user = await verifyAuth();
     const chats = await prisma.chat.findMany({
       where: {
-        userId:user.userId
+        userId: user.userId,
       },
       include: {
         messages: {
           orderBy: {
-            createdAt: "asc"
+            createdAt: "asc",
           },
-          take: 1
-        }
-      }
+          take: 1,
+        },
+      },
     });
 
-const formattedChats = chats.map(chat => ({
-  id: chat.id,
-  preview: chat.messages[0]?.content || "New Chat",
-}));
+    const formattedChats = chats.map((chat) => ({
+      id: chat.id,
+      preview: chat.messages[0]?.content || "New Chat",
+    }));
 
-// console.log("CHATS ----------- ",formattedChats);
+    // console.log("CHATS ----------- ",formattedChats);
     return NextResponse.json(
       {
-        chatHistory: formattedChats
-      
+        chatHistory: formattedChats,
       },
-      { status: 200 }
+      { status: 200 },
     );
-
   } catch (error) {
-    return Response.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    return Response.json({ error: "Internal Server Error" }, { status: 500 });
   }
-
-
 }

@@ -1,6 +1,4 @@
-
-import { extractText, getDocumentProxy } from 'unpdf'
-
+import { extractText, getDocumentProxy } from "unpdf";
 
 export async function extractTextFromPDF(data: Uint8Array) {
   try {
@@ -8,7 +6,7 @@ export async function extractTextFromPDF(data: Uint8Array) {
     const { text, totalPages } = await extractText(pdf, { mergePages: true });
     return { text, totalPages };
   } catch (error) {
-    console.error('PDF parsing error:', error);
-    throw new Error('Failed to process PDF');
+    console.error("PDF parsing error:", error);
+    throw new Error("Failed to process PDF");
   }
 }

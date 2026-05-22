@@ -5,57 +5,46 @@ import { useModal } from "../context/ModalProvider";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
+  const { setOpenHow, setOpenLogin, setOpenSignup, setOpenFeedback } =
+    useModal();
 
-    const {
-        setOpenHow,
-        setOpenLogin,
-        setOpenSignup,
-        setOpenFeedback
-    } = useModal();
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  if (isLoggedIn === null) {
+    return null;
+  }
 
-    const {
-        isLoggedIn,
-        setIsLoggedIn
-    } = useAuth();
-     if (isLoggedIn === null) {
+  const handleLogout = async () => {
+    await fetch("/api/logout", {
+      method: "POST",
+      credentials: "include",
+    });
 
-        return null;
+    setIsLoggedIn(false);
 
-    }
+    window.location.href = "/";
+  };
 
-    const handleLogout = async () => {
-
-        await fetch("/api/logout", {
-            method: "POST",
-            credentials: "include"
-        });
-
-        setIsLoggedIn(false);
-
-        window.location.href = "/";
-
-    };
-
-    return (
-
-        <header className="
+  return (
+    <header
+      className="
         flex justify-between items-center
         fixed top-0 w-full z-50
         border-b border-[var(--border-color)]
         px-4 py-3
         bg-[var(--background)]
         font-[--font-sans]
-        ">
+        "
+    >
+      <AppName />
 
-            <AppName />
-
-            <div className="
+      <div
+        className="
             flex flex-1 justify-end items-center gap-5
-            ">
-
-                {/* HOW IT WORKS */}
-                <button
-                    className="
+            "
+      >
+        {/* HOW IT WORKS */}
+        <button
+          className="
                     cursor-pointer
                     text-[var(--text-muted)]
                     font-sans
@@ -66,16 +55,15 @@ export default function Header() {
                     font-normal
                     hover:text-[var(--primary)]
                     "
-                    onClick={() => setOpenHow(true)}
-                >
-                    How it works
-                </button>
+          onClick={() => setOpenHow(true)}
+        >
+          How it works
+        </button>
 
-                {/* AUTH BUTTONS */}
-                {isLoggedIn ? (
-
-                    <button
-                        className="
+        {/* AUTH BUTTONS */}
+        {isLoggedIn ? (
+          <button
+            className="
                         cursor-pointer
                         bg-[#534ab7]
                         text-white
@@ -87,18 +75,15 @@ export default function Header() {
                         hover:shadow-2xl
                         transition-colors
                         "
-                        onClick={handleLogout}
-                    >
-                        Logout
-                    </button>
-
-                ) : (
-
-                    <>
-
-                        <button
-                            onClick={() => setOpenLogin(true)}
-                            className="
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={() => setOpenLogin(true)}
+              className="
                             cursor-pointer
                             text-[var(--text-muted)]
                             font-sans
@@ -110,13 +95,13 @@ export default function Header() {
                             font-normal
                             hover:shadow-xs
                             "
-                        >
-                            Log In
-                        </button>
+            >
+              Log In
+            </button>
 
-                        <button
-                            onClick={() => setOpenSignup(true)}
-                            className="
+            <button
+              onClick={() => setOpenSignup(true)}
+              className="
                             cursor-pointer
                             bg-[var(--primary)]
                             text-white
@@ -128,18 +113,16 @@ export default function Header() {
                             hover:shadow-2xl
                             transition-colors
                             "
-                        >
-                            Sign Up for free
-                        </button>
+            >
+              Sign Up for free
+            </button>
+          </>
+        )}
 
-                    </>
-
-                )}
-
-                {/* FEEDBACK */}
-                <button
-                    onClick={() => setOpenFeedback(true)}
-                    className="
+        {/* FEEDBACK */}
+        <button
+          onClick={() => setOpenFeedback(true)}
+          className="
                     cursor-pointer
                     text-[var(--text-muted)]
                     font-sans
@@ -150,14 +133,10 @@ export default function Header() {
                     font-normal
                     hover:shadow-2xl
                     "
-                >
-                    Feedback
-                </button>
-
-            </div>
-
-        </header>
-
-    );
-
+        >
+          Feedback
+        </button>
+      </div>
+    </header>
+  );
 }

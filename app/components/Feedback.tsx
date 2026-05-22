@@ -4,12 +4,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import AppName from "./AppName";
 
-export default function Feedback({
-  onClose,
-}: {
-  onClose: () => void;
-}) {
-
+export default function Feedback({ onClose }: { onClose: () => void }) {
   const [rating, setRating] = useState(0);
 
   const [email, setEmail] = useState("");
@@ -18,7 +13,6 @@ export default function Feedback({
   const [error, setError] = useState("");
 
   const handleSubmitFeedback = async () => {
-
     setError("");
 
     if (!email.trim()) {
@@ -32,7 +26,6 @@ export default function Feedback({
     }
 
     try {
-
       const res = await fetch("/api/feedback", {
         method: "POST",
         headers: {
@@ -53,13 +46,10 @@ export default function Feedback({
       toast.success("Feedback submitted 🎉");
 
       onClose();
-
     } catch (error) {
-
       console.log(error);
 
       setError("Failed to submit feedback");
-
     }
   };
 
@@ -86,8 +76,6 @@ p-6
   px-8 py-8
   "
       >
-        
-
         {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
@@ -106,19 +94,16 @@ p-6
         >
           ×
         </button>
-             {/* Logo */}
-                                            <div className="mb-6 flex justify-center">
-                                              <AppName />
-                                            </div>
+        {/* Logo */}
+        <div className="mb-6 flex justify-center">
+          <AppName />
+        </div>
         {/* HEADER */}
         <div className="text-center mb-6">
-                    <h1 className="text-2xl font-bold mt-4">
-                           Share your feedback
-                    </h1>
-                </div>
+          <h1 className="text-2xl font-bold mt-4">Share your feedback</h1>
+        </div>
         {/* EMAIL */}
         <div className="flex flex-col gap-3 mb-4">
-
           <label
             className="
       text-sm
@@ -154,7 +139,6 @@ p-6
 
         {/* TYPE */}
         <div className="flex flex-col gap-3 mb-8">
-
           <label
             className="
       text-sm
@@ -184,12 +168,10 @@ p-6
             <option>🐛 Bug report</option>
             <option>✨ Feature request</option>
           </select>
-
         </div>
 
         {/* RATING */}
         <div className="flex flex-col gap-4 mb-4">
-
           <label
             className="
       text-sm
@@ -203,7 +185,6 @@ p-6
           </label>
 
           <div className="flex items-center gap-3">
-
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
@@ -214,23 +195,17 @@ p-6
         transition-all
         cursor-pointer
         hover:text-yellow-400
-        ${star <= rating
-                    ? "text-yellow-400"
-                    : "text-[#c6c2bb]"
-                  }
+        ${star <= rating ? "text-yellow-400" : "text-[#c6c2bb]"}
       `}
               >
                 ★
               </button>
-
             ))}
-
           </div>
         </div>
 
         {/* MESSAGE */}
         <div className="flex flex-col gap-3 mb-8">
-
           <label
             className="
       text-sm
@@ -258,19 +233,15 @@ p-6
         resize-none
         "
           />
-
         </div>
 
         {/* ERROR */}
         {error && (
-          <p className="text-red-500 text-sm font-medium mb-4">
-            {error}
-          </p>
+          <p className="text-red-500 text-sm font-medium mb-4">{error}</p>
         )}
 
         {/* ACTION BUTTONS */}
         <div className="flex items-center gap-4">
-
           <button
             onClick={handleSubmitFeedback}
             className="
@@ -304,11 +275,8 @@ p-6
           >
             Cancel
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 }
