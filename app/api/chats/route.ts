@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 import { verifyAuth } from "@/app/lib/auth";
+import { Console } from "console";
 
 export async function GET(request: NextRequest) {
   try {
+    console.log("2  ---------  Chats page");
+     console.log("---------");
     const user = await verifyAuth();
     const chats = await prisma.chat.findMany({
       where: {

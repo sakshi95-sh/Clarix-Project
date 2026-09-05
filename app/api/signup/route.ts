@@ -1,8 +1,9 @@
 export const dynamic = "force-dynamic";
 import { prisma } from "@/app/lib/prisma";
 import bcryptjs from "bcryptjs";
+import { NextRequest } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const body = await request.json();
   const { username, name, email, password } = body;
 
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  if (!password) {
+  if (!password?.trim()) {
     return Response.json(
       {
         message: "Password is required",

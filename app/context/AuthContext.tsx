@@ -7,9 +7,6 @@ const AuthContext = createContext<any>(null);
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvided = ({ children }: { children: React.ReactNode }) => {
-  // null = still checking auth
-  // true = logged in
-  // false = logged out
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   const checkAuth = async () => {

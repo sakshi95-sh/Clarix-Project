@@ -1,11 +1,11 @@
 import Header from "./components/Header";
 import { Outfit } from "next/font/google";
 import { test } from "./Database/test-db";
-import AuthRedirect from "./lib/AuthRedirect";
-import Hero from "./Hero";
-import Ticker from "./Ticker";
-import Features from "./Feature";
-import Cta from "./Cta";
+import AuthRedirect from "./components/AuthRedirect";
+import Hero from "./_landing/Hero";
+import Ticker from "./_landing/Ticker";
+import Features from "./_landing/Feature";
+import Cta from "./_landing/Cta";
 import Footer from "./components/Footer";
 
 const outfit = Outfit({ subsets: ["latin"] });

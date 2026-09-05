@@ -63,7 +63,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Error processing audio:", error);
-
     return Response.json({ error: "Failed to process audio" }, { status: 500 });
   }
 }

@@ -5,9 +5,21 @@ export async function getOrCreateChat(
   userId: string,
 ) {
   if (chatId) {
+    const existingChat = await prisma.chat.findFirst(
+          {
+            where: {
+              id: chatId,
+              userId,
+            }
+      })
+    
+    if(!existingChat) throw new Error("Chat not found or unauthorized");
+
     return chatId;
   }
 
+
+  
   const chat = await prisma.chat.create({
     data: {
       user: {

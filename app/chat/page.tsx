@@ -8,7 +8,7 @@ import ChatInput from "./ChatInput";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
 
-export default function Home() {
+export default function ChatPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [inputValue, setInputValue] = useState("");
@@ -50,7 +50,7 @@ export default function Home() {
 
   const handleChatSelect = async (chatId: string) => {
     setChatId(chatId);
-
+    console.log("CHAT ID------",chatId)
     const response = await fetch(`/api/messages?chatId=${chatId}`);
 
     const data = await response.json();

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     });
     if (!user) {
       return NextResponse.json(
-        { message: "Invalid email or password" },
+        { message: "Invalid email Address" },
         { status: 404 },
       );
     }
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       { expiresIn: "1h" },
     );
 
-    console.log("Token:", token);
+    // console.log("Token:", token);
     const response = NextResponse.json(
       {
         email,

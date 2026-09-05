@@ -1,16 +1,15 @@
-export const dynamic = "force-dynamic";
+import { verify } from "crypto";
+import { prisma } from "../../lib/prisma";
 import { verifyAuth } from "@/app/lib/auth";
-import { prisma } from "@/app/lib/prisma";
 
 export async function GET(request: Request) {
-  let user = null;
-  try {
-    user = await verifyAuth();
-  } catch {
-    user = null;
-  }
+  const userId = (await verifyAuth()).userId
+  // console.log("HEADERI ID------",request.headers)
 
-  if (user) {
+
+      console.log("USER ID------",userId)
+
+  if (userId) {
     const { searchParams } = new URL(request.url);
     const chatId = searchParams.get("chatId");
 
@@ -25,6 +24,7 @@ export async function GET(request: Request) {
       });
       return Response.json({ messages });
     } catch (error) {
+      console.log("ERROR INFOMATION-------",error)
       return Response.json(
         { error: "Failed to fetch messages" },
         { status: 500 },
