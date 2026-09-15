@@ -40,11 +40,13 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
       });
 
       const data = await res.json();
-
+      console.log("DATA", data)
+       console.log("RES", res)
       if (res.ok) {
         setIsError("");
-
-        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("userId", data.userID);
+        console.log("LOCALSTOGRATE",  localStorage.getItem("userId")
+)
 
         localStorage.setItem("userName", data.userName);
 
