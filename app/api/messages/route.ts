@@ -3,7 +3,6 @@ import { verifyAuth } from "@/app/lib/auth";
 
 export async function GET(request: Request) {
   const userId = await verifyAuth();
-      console.log("USER ID------",userId)
 
   if (userId) {
     const { searchParams } = new URL(request.url);
