@@ -17,7 +17,7 @@ export async function verifyAuth() {
     const { payload } = await jose.jwtVerify(token, secret);
     console.log("payload", payload)
   
-    return (payload as { userId: string }).userId;
+    return (payload as { userID: string }).userID;
   }
   catch {
     throw new Error("Unauthorized");

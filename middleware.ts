@@ -14,13 +14,12 @@ export async function  middleware(request: NextRequest) {
     if (!secretValue) {
       throw new Error("JWT_SECRET environment variable is not set");
     }
-    
     const secret = new TextEncoder().encode(secretValue);
       const { payload } = await jose.jwtVerify(token, secret);
-      const userId = (payload as {
-        userId: string
-      }).userId;
-      headers.set("x-user-id", userId);
+      const userID = (payload as {
+        userID: string
+      }).userID;
+      headers.set("x-user-id", userID);
 
     }
      catch(error) {
@@ -38,6 +37,7 @@ export async function  middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/api/message",
+    "/api/messages",
     "/api/audio",
     "/api/image",
     "/api/upload",

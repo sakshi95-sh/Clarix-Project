@@ -12,9 +12,9 @@ export async function POST(request: NextRequest) {
 
     const { message, chatId } = body;
 
-    const userId = await verifyAuth();
+    const userID = await verifyAuth();
 
-    
+
 
     // VALIDATION FIRST
     if (typeof message!=='string'|| !message.trim()) {
@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
 
 
     // SAVE USER MESSAGE
-    if (userId) {
-      currentChatId = await getOrCreateChat(chatId, userId);
+    if (userID) {
+      currentChatId = await getOrCreateChat(chatId, userID);
       await saveMessage({
         chatId: currentChatId,
         content: message,
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-      if (!userId) {
+      if (!userID) {
       return Response.json(
         {
           error: "Unauthorized User",
