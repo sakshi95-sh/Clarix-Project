@@ -63,8 +63,6 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Chat error:", error);
-
     return Response.json(
       {
         error: "Failed to process chat",

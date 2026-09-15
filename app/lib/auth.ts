@@ -15,7 +15,6 @@ export async function verifyAuth() {
   try {
     const secret = new TextEncoder().encode(secretValue)
     const { payload } = await jose.jwtVerify(token, secret);
-    console.log("payload", payload)
   
     return (payload as { userID: string }).userID;
   }
