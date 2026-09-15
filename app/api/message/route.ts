@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { saveMessage } from "../../lib/messages";
 import { getOrCreateChat } from "../../lib/chatIdCreation";
 import { prisma } from "@/app/lib/prisma";
+import { verify } from "crypto";
+import { verifyAuth } from "@/app/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +12,9 @@ export async function POST(request: NextRequest) {
 
     const { message, chatId } = body;
 
-    const userId = request.headers.get("x-user-id");
+    const userId = await verifyAuth();
+
+    
 
     // VALIDATION FIRST
     if (typeof message!=='string'|| !message.trim()) {
@@ -36,6 +40,17 @@ export async function POST(request: NextRequest) {
         content: message,
         role: "user",
       });
+    }
+
+      if (!userId) {
+      return Response.json(
+        {
+          error: "Unauthorized User",
+        },
+        {
+          status: 401,
+        },
+      );
     }
 
     // REAL STREAM

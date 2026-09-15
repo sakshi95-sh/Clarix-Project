@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 import { prisma } from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import * as jose from 'jose'
 import bcrypt from "bcryptjs";
 
 export async function POST(request: NextRequest) {
@@ -34,11 +34,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const token = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET || "your-secret-key",
-      { expiresIn: "1h" },
-    );
+    const secretValue = process.env.JWT_SECRET;
+
+    if (!secretValue) {
+      throw new Error("JWT_SECRET environment variable is not set");
+    }
+
+    const secret = new TextEncoder().encode(secretValue);
+
+
+    //Using Jose
+
+    const token = await new jose.SignJWT({ userID: user.id })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('1h')
+    .sign(secret)
+
 
     // console.log("Token:", token);
     const response = NextResponse.json(

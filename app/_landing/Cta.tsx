@@ -12,12 +12,6 @@ export default function Cta() {
       <p className="mt-6 text-lg text-gray-600 max-w-xl">
         Drop a file. Ask a question. Get the answer. That's the whole thing.
       </p>
-
-      <Link href="/chat" className="mt-5">
-        <button className="bg-gradient-to-r from-[var(--primary)] to-[#6a5cff] text-white px-8 py-4 rounded-xl text-lg font-semibold hover:opacity-90 transition">
-          Get started free →
-        </button>
-      </Link>
     </div>
   );
 }

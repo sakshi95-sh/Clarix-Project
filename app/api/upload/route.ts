@@ -68,7 +68,7 @@ export async function POST(request: Request) {
 
     return Response.json(
       {
-        error: "Failed to process PDF",
+        error: "Failed to process chat",
       },
       {
         status: 500,

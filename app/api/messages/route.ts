@@ -1,12 +1,8 @@
-import { verify } from "crypto";
 import { prisma } from "../../lib/prisma";
 import { verifyAuth } from "@/app/lib/auth";
 
 export async function GET(request: Request) {
-  const userId = (await verifyAuth()).userId
-  // console.log("HEADERI ID------",request.headers)
-
-
+  const userId = await verifyAuth();
       console.log("USER ID------",userId)
 
   if (userId) {
